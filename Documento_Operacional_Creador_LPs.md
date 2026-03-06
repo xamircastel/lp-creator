@@ -1,6 +1,9 @@
+# <img src="file:///C:/proyectos/LP_creator/Logo_Newry.png" title="" alt="Imagen" data-align="center">
+
 # Documento Operacional: Herramienta de Creación y Gestión de Landing Pages (VAS)
 
 ## 1. Contexto Empresarial y Objetivo de la Iniciativa
+
 La empresa ofrece servicios digitales (VAS) que son comercializados a través de operadoras móviles, cuyo cobro se realiza directamente mediante la factura mensual o descontando del saldo prepago del usuario. 
 
 Actualmente, la creación de nuevas Landing Pages (LP) para la contratación de estos servicios se realiza bajo demanda por parte del equipo de TI (teniendo a día de hoy más de 150 LPs activas en países como Bangladesh, España, Polonia, EAU, entre otros). 
@@ -8,17 +11,21 @@ Actualmente, la creación de nuevas Landing Pages (LP) para la contratación de 
 **Objetivo de la nueva herramienta:** Crear una plataforma interna autogestionable que permita a los equipos de Marketing y Operaciones crear, editar y gestionar Landing Pages de manera autónoma, rápida y sin depender directamente del equipo técnico para cambios de diseño o publicación, mejorando así los tiempos de respuesta y la eficiencia de la operación diaria.
 
 ## 2. Usuarios de la Herramienta (Público Objetivo)
-*   **Equipos de Marketing y Operaciones** (ej. perfiles no técnicos).
-*   **Usuarios Administradores** (Supervisión de cambios y gestión de plantillas base).
+
+* **Equipos de Marketing y Operaciones** (ej. perfiles no técnicos).
+* **Usuarios Administradores** (Supervisión de cambios y gestión de plantillas base).
 
 ## 3. Modelo Operativo y de Plantillas (Templates)
+
 El sistema debe estar fundamentado en un modelo de plantillas (Templates) parametrizables:
-1.  **Onboarding de Nueva Operadora:** Cuando se abre operación con una nueva operadora en un país determinado, se define de manera conjunta con la operadora un **Template Base**.
-2.  **Creación a partir del Template:** Todas las LPs correspondientes a esa operadora obligatoriamente se construirán heredando la estructura y reglas de su Template Base asignado.
+
+1. **Onboarding de Nueva Operadora:** Cuando se abre operación con una nueva operadora en un país determinado, se define de manera conjunta con la operadora un **Template Base**.
+2. **Creación a partir del Template:** Todas las LPs correspondientes a esa operadora obligatoriamente se construirán heredando la estructura y reglas de su Template Base asignado.
 
 ## 4. Journey del Usuario dentro de la Herramienta
 
 ### 4.1. Acceso y Dashboard Principal
+
 1. **Login:** El usuario ingresa a la plataforma con sus credenciales.
 2. **Sistema de Filtrado Estricto (Contexto):** El dashboard inicial se presenta como un "estado vacío" (Blank State). Para visualizar los datos, el usuario debe obligatoriamente seleccionar primero un **País** y, en forma de cascada, una **Operadora**. Toda gestión o creación queda bloqueada hasta aplicar este filtro.
 3. **Listado de LPs (Dashboard):** Tras la selección, se muestra un panel con el listado de LPs y detalles clave:
@@ -26,45 +33,55 @@ El sistema debe estar fundamentado en un modelo de plantillas (Templates) parame
    * **Flujos de Contratación:** Indicadores visuales y funcionales sobre las tecnologías soportadas por la Landing (Ej. "1 Click / Red Datos" o "OTP / Red Wi-Fi").
    * **Estado:** Borrador, Activo (Publicado), o Deshabilitado (Inactivo).
 4. **Acciones por Landing Page:**
-    * **Botón "Editar":** Redirige al editor visual contextualizando la información según el País y de Operadora.
-    * **Deshabilitar, Guardar o Publicar:** Toda acción que cambie el estado de la LP requiere pasar por un modal de confirmación donde el usuario debe introducir obligatoriamente un **comentario o justificación** que se documentará con fines de auditoría.
-    * **Nueva Landing:** La creación está condicionada a seleccionar previamente un País y Operadora desde un modal secundario, asegurando la aplicación del *Template Base* correcto.
+   * **Botón "Editar":** Redirige al editor visual contextualizando la información según el País y de Operadora.
+   * **Deshabilitar, Guardar o Publicar:** Toda acción que cambie el estado de la LP requiere pasar por un modal de confirmación donde el usuario debe introducir obligatoriamente un **comentario o justificación** que se documentará con fines de auditoría.
+   * **Nueva Landing:** La creación está condicionada a seleccionar previamente un País y Operadora desde un modal secundario, asegurando la aplicación del *Template Base* correcto.
 
 ### 4.2. El Editor de Landing Pages (Creación / Edición)
+
 Una vez en el editor (ya sea creando una LP nueva a partir del template o editando una existente), el usuario tendrá la interfaz de modificación con reglas estrictas:
 
 #### A. Elementos Modificables (Diseño a medida)
-*   Color de fondo.
-*   Imágenes y assets gráficos a mostrar.
-*   Color de textos y botones.
-*   Textos promocionales (sujetos a aprobación).
+
+* Color de fondo (Tema).
+* Imágenes y assets gráficos a mostrar.
+* Color del texto general del cuerpo de la página.
+* Color de fondo y color de texto para los botones (CTA).
+* Textos promocionales (sujetos a aprobación).
 
 #### B. Elementos Fijos (No Modificables por Marketing)
+
 Elementos estándar traídos directamente de la configuración del sistema (ej. desde Way) y exigidos por la operadora:
-*   Textos legales y Términos & Condiciones.
-*   Datos del servicio: Nombre, Tarifa, Periodicidad del cobro.
-*   Flujo técnico subyacente (3G, OTP, Enrichment, etc.).
+
+* Textos legales y Términos & Condiciones.
+* Datos del servicio: Nombre, Tarifa, Periodicidad del cobro.
+* Flujo técnico subyacente (3G, OTP, Enrichment, etc.).
 
 #### C. Funcionalidades de Publicación y Versionado
-*   **Previsualización y Simulador de Flujos:** El editor tiene una vista móvil integrada donde se puede inyectar y visualizar el comportamiento gráfico de la LP alterando entre flujo de "Red Datos (1 Click)" o el "Flujo Wi-Fi (OTP, con pasos de introducir PIN)".
-*   **Gestión de Estados (Guardar / Publicar / Deshabilitar):** Al realizar cualquier acción crítica que afecte el ciclo de vida de la landing page, el sistema abrirá un **Modal de Confirmación**.
-    * En él, el usuario deberá introducir obligatoriamente una justificación sobre los cambios realizados.
-    * Todas las interacciones generan un rastro inmutable.
-*   **Generador de URLs:** Una vez finalizada la creación de una LP nueva y ejecutada su primera publicación, la herramienta debe generar y proporcionar automáticamente la URL asociada.
-*   **Módulo - Registro de Cambios (Logs de Auditoría):** Vista global donde se mapea cronológicamente: fecha y hora, Operador que realizó el cambio, ID de la Landing, Acción Ejecutada (Iconografía verde para publicar, amarilla para guardar, roja para deshabilitar) y el mensaje/comentario que dejó el usuario durante el modal de confirmación.
+
+* **Previsualización y Simulador de Flujos:** El editor tiene una vista móvil integrada donde se puede inyectar y visualizar el comportamiento gráfico de la LP alterando entre flujo de "Red Datos (1 Click)" o el "Flujo Wi-Fi (OTP, con pasos de introducir PIN)".
+* **Gestión de Estados (Guardar / Publicar / Deshabilitar):** Al realizar cualquier acción crítica que afecte el ciclo de vida de la landing page, el sistema abrirá un **Modal de Confirmación**.
+  * En él, el usuario deberá introducir obligatoriamente una justificación sobre los cambios realizados.
+  * Todas las interacciones generan un rastro inmutable.
+* **Generador de URLs:** Una vez finalizada la creación de una LP nueva y ejecutada su primera publicación, la herramienta debe generar y proporcionar automáticamente la URL asociada.
+* **Módulo - Registro de Cambios (Logs de Auditoría):** Vista global donde se mapea cronológicamente: fecha y hora, Operador que realizó el cambio, ID de la Landing, Acción Ejecutada (Iconografía verde para publicar, amarilla para guardar, roja para deshabilitar) y el mensaje/comentario que dejó el usuario durante el modal de confirmación.
 
 ## 5. Requerimientos Funcionales Especiales
 
 ### 5.1. Integración de Scripts Externos (GTM)
+
 El editor debe contar con una sección específica ("Tags/Scripts") que permita al usuario de marketing pegar e insertar fragmentos de código, como contenedores de **Google Tag Manager (GTM)** o píxeles de seguimiento. La herramienta se encargará de inyectar este script correctamente en el código HTML de la Landing Page generada.
 
 ### 5.2. Módulo de Consentimiento y Privacidad (Compliance)
+
 La plataforma debe proveer una funcionalidad (ej. un *toggle* o menú de configuración) para activar interfaces de avisos de cumplimiento normativo en las LPs, dependiendo de la región:
-*   Banners de aceptación/rechazo de Cookies.
-*   Avisos de consentimiento explícito sobre políticas de tratamiento de datos digitales.
-*   *Nota:* Crítico para despliegues en Europa (como los de Movistar, Orange, Yoigo, MasMovil en España).
+
+* Banners de aceptación/rechazo de Cookies.
+* Avisos de consentimiento explícito sobre políticas de tratamiento de datos digitales.
+* *Nota:* Crítico para despliegues en Europa (como los de Movistar, Orange, Yoigo, MasMovil en España).
 
 ## 6. Consideraciones para el Equipo Técnico (Handoff)
-1.  **Tecnología y UX:** Se debe definir si esta solución se implementará como un módulo integrado dentro de los sistemas actuales ("Way") o como un portal/producto independiente. La decisión debe priorizar la posibilidad de construir una **interfaz intuitiva y moderna que permita previsualización ágil**, lo que podría ser una limitante en las herramientas *legacy*.
-2.  **Migración de Activos Actuales:** Tomar como fase 0 la migración e integración tecnológica de las más de 150+ LPs que existen actualmente mapeadas en "lp actuales", categorizadas por países (Polonia, Bangladesh, España, Kazajistán, EAU, Sudáfrica) y sus respectivas operadoras.
-3.  **Trazabilidad:** Asegurar que todos los flujos técnicos back-end (suscripción por billing del operador) sigan intactos cuando la página lance los llamados (hooks) hacia la pasarela de pagos, independientemente de la envoltura visual creada por esta nueva herramienta.
+
+1. **Tecnología y UX:** Se debe definir si esta solución se implementará como un módulo integrado dentro de los sistemas actuales ("Way") o como un portal/producto independiente. La decisión debe priorizar la posibilidad de construir una **interfaz intuitiva y moderna que permita previsualización ágil**, lo que podría ser una limitante en las herramientas *legacy*.
+2. **Migración de Activos Actuales:** Tomar como fase 0 la migración e integración tecnológica de las más de 150+ LPs que existen actualmente mapeadas en "lp actuales", categorizadas por países (Polonia, Bangladesh, España, Kazajistán, EAU, Sudáfrica) y sus respectivas operadoras.
+3. **Trazabilidad:** Asegurar que todos los flujos técnicos back-end (suscripción por billing del operador) sigan intactos cuando la página lance los llamados (hooks) hacia la pasarela de pagos, independientemente de la envoltura visual creada por esta nueva herramienta.
