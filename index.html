@@ -257,7 +257,13 @@
                                 Título Promocional (Copy)
                                 <button class="btn btn-outline" style="padding: 2px 8px; font-size: 11px; background: linear-gradient(45deg, #f3e8ff, #e0e7ff); border-color: #c084fc; color: #4338ca;" onclick="openAITextModal('input-title')">✨ Generar con IA</button>
                             </label>
-                            <input type="text" id="input-title" value="¡Disfruta los Mejores Cómics!" oninput="updatePreview()">
+                            <input type="text" id="input-title" value="¡Disfruta {{servicio}} con {{operadora}}!" oninput="updatePreview()">
+                            <div style="margin-top: 8px; display: flex; gap: 5px; flex-wrap: wrap;">
+                                <span style="font-size: 10px; color: #64748b; margin-top: 4px;">Variables (Placeholders):</span>
+                                <button class="btn btn-outline" style="padding: 2px 6px; font-size: 10px; border-radius: 10px;" onclick="insertPlaceholder('input-title', '{{servicio}}')" title="Inserta el nombre del servicio actual">+ {{servicio}}</button>
+                                <button class="btn btn-outline" style="padding: 2px 6px; font-size: 10px; border-radius: 10px;" onclick="insertPlaceholder('input-title', '{{operadora}}')" title="Inserta el nombre de la operadora">+ {{operadora}}</button>
+                                <button class="btn btn-outline" style="padding: 2px 6px; font-size: 10px; border-radius: 10px;" onclick="insertPlaceholder('input-title', '{{precio}}')" title="Inserta la tarifa actual">+ {{precio}}</button>
+                            </div>
                         </div>
 
                         <!-- SECCIÓN 2: FIJOS (Operadora / Compliance) -->
@@ -275,7 +281,12 @@
                         </div>
                         <div class="form-group" style="margin-bottom: 15px;">
                             <label>Texto Botón de Pago (Obligatorio)</label>
-                            <input type="text" class="fixed-field" value="Suscribirse con obligación de pago" readonly id="input-btn-text" oninput="updatePreview()">
+                            <input type="text" value="Suscribirse a {{servicio}} por {{precio}}" id="input-btn-text" oninput="updatePreview()" style="width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 4px; box-sizing: border-box;">
+                            <div style="margin-top: 5px; display: flex; gap: 5px; flex-wrap: wrap;">
+                                <span style="font-size: 10px; color: #64748b; margin-top: 4px;">Variables:</span>
+                                <button class="btn btn-outline" style="padding: 2px 6px; font-size: 10px; border-radius: 10px;" onclick="insertPlaceholder('input-btn-text', '{{servicio}}')">+ {{servicio}}</button>
+                                <button class="btn btn-outline" style="padding: 2px 6px; font-size: 10px; border-radius: 10px;" onclick="insertPlaceholder('input-btn-text', '{{precio}}')">+ {{precio}}</button>
+                            </div>
                         </div>
 
                         <!-- SECCIÓN 3: COMPLIANCE Y SCRIPTS -->
@@ -674,6 +685,47 @@
             `;
         }
 
+        function insertPlaceholder(inputId, placeholder) {
+            const el = document.getElementById(inputId);
+            const startPos = el.selectionStart;
+            const endPos = el.selectionEnd;
+            if (startPos !== undefined && endPos !== undefined) {
+                el.value = el.value.substring(0, startPos) + placeholder + el.value.substring(endPos, el.value.length);
+                el.selectionStart = startPos + placeholder.length;
+                el.selectionEnd = startPos + placeholder.length;
+            } else {
+                el.value = el.value + ' ' + placeholder;
+            }
+            updatePreview();
+        }
+
+        function processPlaceholders(text) {
+            if (!text) return text;
+            
+            // Intentar extraer valores del contexto actual (si estamos editando/clonando)
+            const paisSelect = document.getElementById('nuevo-pais');
+            const opSelect = document.getElementById('nuevo-operadora');
+            const srvSelect = document.getElementById('nuevo-servicio');
+            
+            const paisInfo = paisSelect ? paisSelect.options[paisSelect.selectedIndex]?.text : '';
+            const opInfo = opSelect ? opSelect.options[opSelect.selectedIndex]?.text : '';
+            const servInfo = srvSelect ? srvSelect.options[srvSelect.selectedIndex]?.text : '';
+            
+            // Valores por defecto si no hay selección
+            const pPais = paisInfo && paisInfo !== 'Seleccione...' ? paisInfo : '[PAÍS]';
+            const pOp = opInfo && opInfo !== 'Seleccione...' ? opInfo : '[OPERADORA]';
+            const pServ = servInfo && servInfo !== 'Seleccione...' ? servInfo : '[SERVICIO]';
+            
+            // TODO: Podríamos agregar más campos como precio, si lo tuviéramos en el form
+            const pPrecio = '[PRECIO]';
+
+            return text
+                .replace(/\{\{operadora\}\}/gi, pOp)
+                .replace(/\{\{servicio\}\}/gi, pServ)
+                .replace(/\{\{pais\}\}/gi, pPais)
+                .replace(/\{\{precio\}\}/gi, pPrecio);
+        }
+
         // Lógica de Vistas
         function switchView(viewName) {
             document.getElementById('view-dashboard').style.display = viewName === 'dashboard' ? 'block' : 'none';
@@ -703,6 +755,9 @@
             let btnText = document.getElementById('input-btn-text').value; 
             const showCookies = document.getElementById('input-cookies').checked;
 
+            const parsedTitle = processPlaceholders(titletext);
+            const parsedBtnText = processPlaceholders(btnText);
+
             const previewBg = document.getElementById('preview-bg');
             previewBg.style.backgroundColor = bgColor;
             previewBg.style.color = textColor;
@@ -711,7 +766,7 @@
             previewBtn.style.backgroundColor = btnColor;
             previewBtn.style.color = btnTextColor;
 
-            document.getElementById('preview-title').innerText = titletext || 'TÍTULO VACÍO';
+            document.getElementById('preview-title').innerText = parsedTitle || 'TÍTULO VACÍO';
             document.getElementById('preview-cookie').style.display = showCookies ? 'block' : 'none';
 
             const logoUrl = document.getElementById('input-logo-url')?.value;
@@ -730,7 +785,7 @@
 
             // Manejo de pantallas según el flujo
             if (currentFlow === 'datos') {
-                document.getElementById('preview-btn').innerText = btnText;
+                document.getElementById('preview-btn').innerText = parsedBtnText || 'Continuar';
                 document.getElementById('preview-msisdn').style.display = 'none';
                 document.getElementById('preview-otp').style.display = 'none';
                 document.getElementById('preview-legal-wifi').style.display = 'none';
@@ -741,7 +796,7 @@
                     document.getElementById('preview-otp').style.display = 'none';
                     document.getElementById('preview-legal-wifi').style.display = 'block';
                 } else { // Validar PIN
-                    document.getElementById('preview-btn').innerText = btnText;
+                    document.getElementById('preview-btn').innerText = parsedBtnText || 'Continuar';
                     document.getElementById('preview-msisdn').style.display = 'none';
                     document.getElementById('preview-otp').style.display = 'block';
                     document.getElementById('preview-legal-wifi').style.display = 'none';
