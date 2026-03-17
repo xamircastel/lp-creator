@@ -253,7 +253,10 @@
                         </div>
 
                         <div class="form-group" style="margin-bottom: 15px;">
-                            <label>Título Promocional (Copy)</label>
+                            <label style="display: flex; justify-content: space-between; align-items: center;">
+                                Título Promocional (Copy)
+                                <button class="btn btn-outline" style="padding: 2px 8px; font-size: 11px; background: linear-gradient(45deg, #f3e8ff, #e0e7ff); border-color: #c084fc; color: #4338ca;" onclick="openAITextModal('input-title')">✨ Generar con IA</button>
+                            </label>
                             <input type="text" id="input-title" value="¡Disfruta los Mejores Cómics!" oninput="updatePreview()">
                         </div>
 
@@ -799,6 +802,7 @@
             <div style="display: flex; gap: 15px; margin-bottom: 20px;">
                 <button class="btn btn-primary" id="tab-gallery" onclick="switchMediaTab('gallery')">🗂️ Mi Galería</button>
                 <button class="btn btn-outline" id="tab-upload" onclick="switchMediaTab('upload')">☁️ Subir Nueva Imagen</button>
+                <button class="btn btn-outline" id="tab-ai" onclick="switchMediaTab('ai')" style="background: linear-gradient(45deg, #f3e8ff, #e0e7ff); border-color: #c084fc; color: #4338ca;">✨ Generar con IA</button>
             </div>
 
             <!-- Vista de Galería -->
@@ -834,6 +838,33 @@
                 <button class="btn btn-success" onclick="uploadMedia()">Subir a la Galería</button>
                 <p style="font-size: 12px; color: #64748b; margin-top: 10px;">En este mock, la imagen se almacena en el LocalStorage de tu navegador para simular repositorio permanente.</p>
             </div>
+
+            <!-- Vista de Generación de IA -->
+            <div id="view-media-ai" style="display: none;">
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label>Describe la imagen que deseas generar (Prompt)</label>
+                    <textarea id="ai-image-prompt" class="form-control" rows="3" placeholder="Ej: Una ilustración de superhéroes en estilo cómic pop-art con colores vivos..."></textarea>
+                </div>
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label>Estilo Visual</label>
+                    <select id="ai-image-style" class="form-control">
+                        <option value="comic">Cómic / Cartoon</option>
+                        <option value="3d">Render 3D Moderno</option>
+                        <option value="realistic">Fotografía Realista</option>
+                        <option value="minimalist">Ilustración Minimalista</option>
+                    </select>
+                </div>
+                <button class="btn btn-primary" style="background: linear-gradient(45deg, #7c3aed, #4f46e5); border: none;" onclick="generateImageAI()">🪄 Generar Imagen</button>
+                
+                <div id="ai-image-result" style="margin-top: 20px; display: none; text-align: center; background: #f8fafc; padding: 20px; border-radius: 8px; border: 1px dashed #cbd5e1;">
+                    <div id="ai-image-loader" style="color: #64748b; font-weight: 500; font-size: 14px;">⏳ Generando obra de arte...<br><small>Simulando conexión con IA</small></div>
+                    <div id="ai-image-output" style="display: none;">
+                        <img id="ai-generated-img" src="" style="max-width: 100%; max-height: 250px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 15px;">
+                        <br>
+                        <button class="btn btn-success" onclick="saveAIToGallery()">💾 Guardar en Galería y Usar</button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -858,18 +889,31 @@
         }
 
         function switchMediaTab(tab) {
+            document.getElementById('view-media-gallery').style.display = 'none';
+            document.getElementById('view-media-upload').style.display = 'none';
+            if (document.getElementById('view-media-ai')) {
+                document.getElementById('view-media-ai').style.display = 'none';
+            }
+
+            document.getElementById('tab-gallery').className = 'btn btn-outline';
+            document.getElementById('tab-upload').className = 'btn btn-outline';
+            if (document.getElementById('tab-ai')) {
+                document.getElementById('tab-ai').className = 'btn btn-outline';
+            }
+
             if(tab === 'gallery') {
                 document.getElementById('view-media-gallery').style.display = 'block';
-                document.getElementById('view-media-upload').style.display = 'none';
                 document.getElementById('tab-gallery').className = 'btn btn-primary';
-                document.getElementById('tab-upload').className = 'btn btn-outline';
                 renderGallery();
-            } else {
-                document.getElementById('view-media-gallery').style.display = 'none';
+            } else if (tab === 'upload') {
                 document.getElementById('view-media-upload').style.display = 'block';
                 document.getElementById('tab-upload').className = 'btn btn-primary';
-                document.getElementById('tab-gallery').className = 'btn btn-outline';
                 document.getElementById('upload-category').value = activeMediaContext;
+            } else if (tab === 'ai') {
+                document.getElementById('view-media-ai').style.display = 'block';
+                document.getElementById('tab-ai').className = 'btn btn-primary';
+                document.getElementById('ai-image-result').style.display = 'none';
+                document.getElementById('ai-image-output').style.display = 'none';
             }
         }
 
@@ -949,6 +993,176 @@
             }
             updatePreview();
             closeMediaManager();
+        }
+
+        // Mock para IA de Imágenes
+        let simulatedAiImgUrl = '';
+        function generateImageAI() {
+            const prompt = document.getElementById('ai-image-prompt').value;
+            if(!prompt) {
+                alert('Por favor ingresa un texto descriptivo para el prompt.');
+                return;
+            }
+
+            document.getElementById('ai-image-result').style.display = 'block';
+            document.getElementById('ai-image-loader').style.display = 'block';
+            document.getElementById('ai-image-output').style.display = 'none';
+
+            // Simulación de delay y respuesta
+            setTimeout(() => {
+                const style = document.getElementById('ai-image-style').options[document.getElementById('ai-image-style').selectedIndex].text;
+                // Usamos diferentes imagenes placeholders de unsplash según random
+                const randomId = Math.floor(Math.random() * 1000);
+                simulatedAiImgUrl = `https://picsum.photos/seed/${randomId}/600/300`;
+                
+                document.getElementById('ai-image-loader').style.display = 'none';
+                document.getElementById('ai-generated-img').src = simulatedAiImgUrl;
+                document.getElementById('ai-image-output').style.display = 'block';
+            }, 2500);
+        }
+
+        function saveAIToGallery() {
+            const prompt = document.getElementById('ai-image-prompt').value;
+            const newMedia = {
+                id: Date.now(),
+                category: activeMediaContext, // Guarda según desde donde se abrió
+                name: 'IA: ' + prompt.substring(0, 20) + '...',
+                url: simulatedAiImgUrl
+            };
+            mockGallery.push(newMedia);
+            localStorage.setItem('lp_creator_gallery', JSON.stringify(mockGallery));
+            alert('✅ Imagen generada guardada en tu Galería.');
+            
+            document.getElementById('gallery-filter').value = newMedia.category;
+            switchMediaTab('gallery');
+        }
+    </script>
+
+    <!-- Modal AI Text Generator -->
+    <div id="aiTextModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1060; align-items: center; justify-content: center;">
+        <div style="background: white; padding: 25px; border-radius: 8px; width: 500px; max-width: 95%; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px; margin-bottom: 15px;">
+                <h3 style="margin: 0; color: #4338ca;">✨ Generar Texto con IA</h3>
+                <button class="btn btn-outline" style="padding: 5px 10px; font-size: 12px;" onclick="closeAITextModal()">Cerrar ✖</button>
+            </div>
+            
+            <p style="font-size: 13px; color: #64748b; margin-bottom: 15px;">Describe de qué trata el producto para que la IA genere un copy atractivo y orientado a la conversión.</p>
+            
+            <div class="form-group" style="margin-bottom: 15px;">
+                <label>Contexto o Producto (Prompt)</label>
+                <textarea id="ai-text-prompt" class="form-control" rows="3" placeholder="Ej: Un servicio de streaming de cómics manga, para jóvenes en España..."></textarea>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 15px;">
+                <label>Tono del mensaje</label>
+                <select id="ai-text-tone" class="form-control">
+                    <option value="directo">Directo y Urgente</option>
+                    <option value="divertido">Divertido / Desenfadado</option>
+                    <option value="exclusivo">Exclusivo / Premium</option>
+                </select>
+            </div>
+
+            <button class="btn btn-primary" style="width: 100%; background: linear-gradient(45deg, #7c3aed, #4f46e5); border: none; margin-bottom: 20px;" onclick="generateTextAI()">🪄 Generar Textos</button>
+
+            <!-- Resultados -->
+            <div id="ai-text-results-container" style="display: none;">
+                <label style="font-weight: bold; font-size: 13px; display: block; margin-bottom: 5px;">Sugerencias Generadas:</label>
+                <div id="ai-text-loader" style="text-align: center; padding: 10px; color: #64748b; font-size: 13px;">⏳ Analizando y redactando...</div>
+                
+                <div id="ai-text-options" style="display: none; display: flex; flex-direction: column; gap: 8px; margin-bottom: 15px;">
+                    <!-- Se inyectan opciones -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentTextTarget = '';
+
+        function openAITextModal(targetId) {
+            currentTextTarget = targetId;
+            document.getElementById('aiTextModal').style.display = 'flex';
+            document.getElementById('ai-text-results-container').style.display = 'none';
+        }
+
+        function closeAITextModal() {
+            document.getElementById('aiTextModal').style.display = 'none';
+            document.getElementById('ai-text-prompt').value = "";
+        }
+
+        function generateTextAI() {
+            const prompt = document.getElementById('ai-text-prompt').value;
+            if(!prompt) {
+                alert('Escribe un poco de contexto para la IA');
+                return;
+            }
+
+            document.getElementById('ai-text-results-container').style.display = 'block';
+            document.getElementById('ai-text-loader').style.display = 'block';
+            document.getElementById('ai-text-options').style.display = 'none';
+
+            // Simular respuesta de IA
+            setTimeout(() => {
+                const tone = document.getElementById('ai-text-tone').value;
+                const optionsContainer = document.getElementById('ai-text-options');
+                optionsContainer.innerHTML = '';
+                
+                let mockResponses = [];
+                if(tone === 'directo') {
+                    mockResponses = [
+                        "¡Accede ahora a los mejores cómics!",
+                        "Suscríbete y empieza a leer al instante.",
+                        "Cómics ilimitados. Desbloquéalos hoy."
+                    ];
+                } else if(tone === 'divertido') {
+                    mockResponses = [
+                        "¡Prepárate para la aventura más épica!",
+                        "¿Aburrido? ¡Ponle color con nuestros cómics!",
+                        "Dale superpoderes a tus ratos libres 🦸‍♂️"
+                    ];
+                } else {
+                    mockResponses = [
+                        "Acceso Premium a novelas gráficas exclusivas.",
+                        "Tu colección privada de Cómics Top Te Espera.",
+                        "Solo para verdaderos coleccionistas."
+                    ];
+                }
+
+                mockResponses.forEach((text, index) => {
+                    const row = document.createElement('div');
+                    row.style.cssText = 'display: flex; justify-content: space-between; align-items: center; background: #f8fafc; padding: 10px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 13px;';
+                    
+                    const span = document.createElement('span');
+                    span.innerText = text;
+                    span.style.flex = "1";
+                    span.style.marginRight = "10px";
+
+                    const btn = document.createElement('button');
+                    btn.className = 'btn btn-outline';
+                    btn.style.cssText = 'padding: 4px 8px; font-size: 11px; white-space: nowrap;';
+                    btn.innerText = 'Usar';
+                    btn.onclick = () => applyAIText(text);
+
+                    row.appendChild(span);
+                    row.appendChild(btn);
+                    optionsContainer.appendChild(row);
+                });
+
+                document.getElementById('ai-text-loader').style.display = 'none';
+                document.getElementById('ai-text-options').style.display = 'flex';
+            }, 1800);
+        }
+
+        function applyAIText(text) {
+            if(currentTextTarget) {
+                const inputElement = document.getElementById(currentTextTarget);
+                if(inputElement) {
+                    inputElement.value = text;
+                    // Disparar evento para que reaccione la vista previa
+                    inputElement.dispatchEvent(new Event('input', { bubbles: true }));
+                }
+            }
+            closeAITextModal();
         }
     </script>
 
