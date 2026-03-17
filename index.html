@@ -239,9 +239,15 @@
                         </div>
 
                         <div class="form-group" style="margin-bottom: 15px;">
+                            <label>Logo</label>
+                            <button class="btn btn-outline" style="width: 100%; border-style: dashed; padding: 10px; margin-bottom: 5px;" onclick="openMediaManager('logo')">🖼️ Seleccionar / Subir Logo</button>
+                            <input type="hidden" id="input-logo-url" value="Logo_Newry.png" onchange="updatePreview()">
+                        </div>
+
+                        <div class="form-group" style="margin-bottom: 15px;">
                             <label>Imagen Promocional (Hero)</label>
-                            <input type="file" disabled title="Solo subida en entorno final">
-                            <div class="help-text">Formatos permitidos: JPG, PNG, GIF. Max 2MB.</div>
+                            <button class="btn btn-outline" style="width: 100%; border-style: dashed; padding: 10px; margin-bottom: 5px;" onclick="openMediaManager('hero')">🖼️ Seleccionar / Subir Hero</button>
+                            <input type="hidden" id="input-hero-url" onchange="updatePreview()">
                         </div>
 
                         <div class="form-group" style="margin-bottom: 15px;">
@@ -309,8 +315,9 @@
                             <div class="frame-notch"></div>
                             
                             <div id="preview-bg">
-                                <img src="Logo_Newry.png" height="30" onerror="this.src='https://via.placeholder.com/100x30/ffffff/1e293b?text=CarrierLogo'" style="margin-top: 10px; background: rgba(255,255,255,0.8); padding: 5px; border-radius: 5px;">
+                                <img src="Logo_Newry.png" id="preview-logo" height="30" onerror="this.src='https://via.placeholder.com/100x30/ffffff/1e293b?text=CarrierLogo'" style="margin-top: 10px; background: rgba(255,255,255,0.8); padding: 5px; border-radius: 5px; max-width: 80%; object-fit: contain;">
                                 <h2 id="preview-title">¡Disfruta los Mejores Cómics!</h2>
+                                <img id="preview-hero" src="" style="max-width: 100%; border-radius: 8px; margin-bottom: 20px; display: none; object-fit: contain;">
                                 
                                 <div id="preview-cookie">
                                     <strong>Aviso de Cookies:</strong> Utilizamos cookies para mejorar tu experiencia. Al continuar aceptas las políticas de la UE.
@@ -611,9 +618,23 @@
             const previewBtn = document.getElementById('preview-btn');
             previewBtn.style.backgroundColor = btnColor;
             previewBtn.style.color = btnTextColor;
-            
+
             document.getElementById('preview-title').innerText = titletext || 'TÍTULO VACÍO';
             document.getElementById('preview-cookie').style.display = showCookies ? 'block' : 'none';
+
+            const logoUrl = document.getElementById('input-logo-url')?.value;
+            if (logoUrl) {
+                document.getElementById('preview-logo').src = logoUrl;
+            }
+
+            const heroUrl = document.getElementById('input-hero-url')?.value;
+            const heroImg = document.getElementById('preview-hero');
+            if (heroUrl) {
+                heroImg.src = heroUrl;
+                heroImg.style.display = 'block';
+            } else {
+                heroImg.style.display = 'none';
+            }
 
             // Manejo de pantallas según el flujo
             if (currentFlow === 'datos') {
@@ -746,6 +767,170 @@
 
         // Init
         updatePreview();
+    </script>
+
+    <!-- Modal Media Manager (Galería / Subir) -->
+    <div id="mediaModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1050; align-items: center; justify-content: center;">
+        <div style="background: white; padding: 25px; border-radius: 8px; width: 800px; max-width: 95%; max-height: 90vh; overflow-y: auto; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px; margin-bottom: 20px;">
+                <h3 style="margin: 0; color: #1e293b;" id="mediaModalTitle">Gestor de Medios</h3>
+                <button class="btn btn-outline" style="padding: 5px 10px; font-size: 12px;" onclick="closeMediaManager()">Cerrar ✖</button>
+            </div>
+
+            <div style="display: flex; gap: 15px; margin-bottom: 20px;">
+                <button class="btn btn-primary" id="tab-gallery" onclick="switchMediaTab('gallery')">🗂️ Mi Galería</button>
+                <button class="btn btn-outline" id="tab-upload" onclick="switchMediaTab('upload')">☁️ Subir Nueva Imagen</button>
+            </div>
+
+            <!-- Vista de Galería -->
+            <div id="view-media-gallery">
+                <div style="margin-bottom: 15px; display: flex; gap: 10px; align-items: center;">
+                    <label style="font-size: 14px; font-weight: 600;">Filtrar por categoría:</label>
+                    <select id="gallery-filter" class="form-control" style="width: auto; padding: 5px;" onchange="renderGallery()">
+                        <option value="all">Todas</option>
+                        <option value="logo">Logos</option>
+                        <option value="hero">Imágenes Hero</option>
+                        <option value="other">Otros</option>
+                    </select>
+                </div>
+                <div id="gallery-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px;">
+                    <!-- Aquí se inyectan las imágenes dinámicamente -->
+                </div>
+            </div>
+
+            <!-- Vista de Subida -->
+            <div id="view-media-upload" style="display: none;">
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label>Selecciona la categoría de la imagen</label>
+                    <select id="upload-category" class="form-control">
+                        <option value="logo">Logo / Marca</option>
+                        <option value="hero">Imagen Promocional (Hero)</option>
+                        <option value="other">Otro (Iconos, Fondos, etc.)</option>
+                    </select>
+                </div>
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label>Seleccionar Archivo (Se guardará localmente en el mock)</label>
+                    <input type="file" id="upload-file-input" accept="image/*" class="form-control" style="padding: 5px;">
+                </div>
+                <button class="btn btn-success" onclick="uploadMedia()">Subir a la Galería</button>
+                <p style="font-size: 12px; color: #64748b; margin-top: 10px;">En este mock, la imagen se almacena en el LocalStorage de tu navegador para simular repositorio permanente.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let activeMediaContext = 'logo'; // 'logo' o 'hero' 
+        let mockGallery = JSON.parse(localStorage.getItem('lp_creator_gallery')) || [
+            { id: 1, category: 'logo', name: 'Logo Default Newry', url: 'Logo_Newry.png' },
+            { id: 2, category: 'hero', name: 'Hero Comics Ejemplo', url: 'https://images.unsplash.com/photo-1612036782180-6f0b6ce846ce?auto=format&fit=crop&q=80&w=600&h=300' }
+        ];
+
+        function openMediaManager(contextTarget) {
+            activeMediaContext = contextTarget;
+            document.getElementById('mediaModalTitle').innerText = contextTarget === 'logo' ? 'Seleccionar / Subir Logo' : 'Seleccionar / Subir Imagen Hero';
+            document.getElementById('mediaModal').style.display = 'flex';
+            document.getElementById('gallery-filter').value = contextTarget;
+            switchMediaTab('gallery');
+        }
+
+        function closeMediaManager() {
+            document.getElementById('mediaModal').style.display = 'none';
+            document.getElementById('upload-file-input').value = "";
+        }
+
+        function switchMediaTab(tab) {
+            if(tab === 'gallery') {
+                document.getElementById('view-media-gallery').style.display = 'block';
+                document.getElementById('view-media-upload').style.display = 'none';
+                document.getElementById('tab-gallery').className = 'btn btn-primary';
+                document.getElementById('tab-upload').className = 'btn btn-outline';
+                renderGallery();
+            } else {
+                document.getElementById('view-media-gallery').style.display = 'none';
+                document.getElementById('view-media-upload').style.display = 'block';
+                document.getElementById('tab-upload').className = 'btn btn-primary';
+                document.getElementById('tab-gallery').className = 'btn btn-outline';
+                document.getElementById('upload-category').value = activeMediaContext;
+            }
+        }
+
+        function renderGallery() {
+            const grid = document.getElementById('gallery-grid');
+            const filter = document.getElementById('gallery-filter').value;
+            grid.innerHTML = '';
+
+            const itemsToShow = mockGallery.filter(item => filter === 'all' || item.category === filter);
+
+            if(itemsToShow.length === 0) {
+                grid.innerHTML = '<p style="grid-column: 1 / -1; color: #64748b;">No hay imágenes registradas en esta categoría. Sube una nueva para continuar.</p>';
+                return;
+            }
+
+            itemsToShow.forEach(item => {
+                const card = document.createElement('div');
+                card.style.cssText = 'border: 1px solid #cbd5e1; border-radius: 6px; padding: 10px; cursor: pointer; transition: transform 0.2s; background: #f8fafc; text-align: center;';
+                card.onmouseover = () => card.style.transform = 'scale(1.05)';
+                card.onmouseout = () => card.style.transform = 'scale(1)';
+                card.onclick = () => selectMedia(item.url);
+
+                const catBadge = document.createElement('div');
+                catBadge.style.cssText = 'font-size: 10px; background: #e2e8f0; border-radius: 12px; display: inline-block; padding: 2px 8px; margin-bottom: 8px; color: #475569; font-weight: bold;';
+                catBadge.innerText = item.category.toUpperCase();
+
+                const img = document.createElement('img');
+                img.src = item.url;
+                img.style.cssText = 'width: 100%; height: 80px; object-fit: contain; margin-bottom: 8px; background: white; border-radius: 4px; border: 1px solid #e2e8f0;';
+
+                const p = document.createElement('p');
+                p.style.cssText = 'font-size: 12px; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #334155; font-weight: 500;';
+                p.innerText = item.name;
+
+                card.appendChild(catBadge);
+                card.appendChild(img);
+                card.appendChild(p);
+                grid.appendChild(card);
+            });
+        }
+
+        function uploadMedia() {
+            const fileInput = document.getElementById('upload-file-input');
+            const catSelect = document.getElementById('upload-category');
+
+            if(fileInput.files.length === 0) {
+                alert('Por favor selecciona un archivo de imagen en tu ordenador.');
+                return;
+            }
+
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                const newMedia = {
+                    id: Date.now(),
+                    category: catSelect.value,
+                    name: file.name,
+                    url: e.target.result
+                };
+                mockGallery.push(newMedia);
+                // Guardar persistencia temporalmente en LocalStorage para el Mock
+                localStorage.setItem('lp_creator_gallery', JSON.stringify(mockGallery));
+                alert('✅ Imagen clasificada y guardada en tu Galería Personal.');
+                
+                document.getElementById('gallery-filter').value = newMedia.category;
+                switchMediaTab('gallery');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function selectMedia(url) {
+            if(activeMediaContext === 'logo') {
+                document.getElementById('input-logo-url').value = url;
+            } else {
+                document.getElementById('input-hero-url').value = url;
+            }
+            updatePreview();
+            closeMediaManager();
+        }
     </script>
 
     <!-- Modal de Comentarios para Historial (Logs) -->
