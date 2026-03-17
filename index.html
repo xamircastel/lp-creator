@@ -1071,7 +1071,7 @@
             <div id="view-media-upload" style="display: none;">
                 <div class="form-group" style="margin-bottom: 15px;">
                     <label>Selecciona la categoría de la imagen</label>
-                    <select id="upload-category" class="form-control">
+                    <select id="upload-category" class="form-control" onchange="updateUploadHints()">
                         <option value="logo">Logo / Marca</option>
                         <option value="hero">Imagen Promocional (Hero)</option>
                         <option value="other">Otro (Iconos, Fondos, etc.)</option>
@@ -1079,9 +1079,13 @@
                 </div>
                 <div class="form-group" style="margin-bottom: 15px;">
                     <label>Seleccionar Archivo (Se guardará localmente en el mock)</label>
-                    <input type="file" id="upload-file-input" accept="image/*" class="form-control" style="padding: 5px;">
+                    <input type="file" id="upload-file-input" accept=".png,.webp" class="form-control" style="padding: 5px; margin-bottom: 5px;">
+                    <div id="upload-hints" style="font-size: 11px; color: #0369a1; background: #e0f2fe; padding: 8px; border-radius: 4px; border-left: 3px solid #0284c7;">
+                        <strong>Requisitos para Logo:</strong> Formatos: PNG, WEBP (fondo transparente). Peso Máx: <strong>500 KB</strong>. Dimensiones rec: 300x100px.
+                    </div>
                 </div>
                 <button class="btn btn-success" onclick="uploadMedia()">Subir a la Galería</button>
+                <div id="upload-error-msg" style="color: #dc2626; font-size: 12px; font-weight: bold; margin-top: 10px; display: none;"></div>
                 <p style="font-size: 12px; color: #64748b; margin-top: 10px;">En este mock, la imagen se almacena en el LocalStorage de tu navegador para simular repositorio permanente.</p>
             </div>
 
@@ -1201,32 +1205,85 @@
             });
         }
 
+        function updateUploadHints() {
+            const cat = document.getElementById('upload-category').value;
+            const hintsEl = document.getElementById('upload-hints');
+            const fileInput = document.getElementById('upload-file-input');
+            const errorMsg = document.getElementById('upload-error-msg');
+            
+            errorMsg.style.display = 'none'; // clear errors
+            fileInput.value = ''; // clear current file
+
+            if (cat === 'logo') {
+                hintsEl.innerHTML = "<strong>Requisitos para Logo:</strong> Formatos: PNG, WEBP (fondo transparente). Peso Máx: <strong>500 KB</strong>. Dimensiones rec: 300x100px.";
+                fileInput.accept = ".png,.webp";
+            } else if (cat === 'hero') {
+                hintsEl.innerHTML = "<strong>Requisitos para Hero:</strong> Formatos: JPG, PNG, WEBP. Peso Máx: <strong>2 MB</strong>. Dimensiones rec: 600x800px.";
+                fileInput.accept = ".jpg,.jpeg,.png,.webp";
+            } else {
+                hintsEl.innerHTML = "<strong>Requisitos Generales:</strong> Formatos: JPG, PNG, WEBP. Peso Máx: <strong>2 MB</strong>.";
+                fileInput.accept = ".jpg,.jpeg,.png,.webp";
+            }
+        }
+
         function uploadMedia() {
             const fileInput = document.getElementById('upload-file-input');
             const catSelect = document.getElementById('upload-category');
+            const errorMsg = document.getElementById('upload-error-msg');
+            
+            errorMsg.style.display = 'none';
 
             if(fileInput.files.length === 0) {
-                alert('Por favor selecciona un archivo de imagen en tu ordenador.');
+                errorMsg.innerText = '⚠️ Por favor selecciona un archivo de imagen en tu ordenador.';
+                errorMsg.style.display = 'block';
                 return;
             }
 
             const file = fileInput.files[0];
+            const cat = catSelect.value;
+            
+            // Validaciones de Peso (Size)
+            const maxSize = cat === 'logo' ? 500 * 1024 : 2 * 1024 * 1024; // 500 KB o 2 MB
+            if (file.size > maxSize) {
+                errorMsg.innerText = `⚠️ El archivo supera el peso máximo permitido (${cat === 'logo' ? '500 KB' : '2 MB'}).`;
+                errorMsg.style.display = 'block';
+                return;
+            }
+
+            // Validaciones de Formato (Mime Type)
+            const validTypes = cat === 'logo' ? ['image/png', 'image/webp'] : ['image/jpeg', 'image/png', 'image/webp'];
+            if (!validTypes.includes(file.type)) {
+                errorMsg.innerText = `⚠️ Formato no permitido. Por favor revisa las instrucciones de la categoría.`;
+                errorMsg.style.display = 'block';
+                return;
+            }
+
             const reader = new FileReader();
 
             reader.onload = function(e) {
-                const newMedia = {
-                    id: Date.now(),
-                    category: catSelect.value,
-                    name: file.name,
-                    url: e.target.result
+                // Comprobación adicional construyendo un objeto imagen para asegurarnos que no esté corrupta
+                const img = new Image();
+                img.onload = function() {
+                    const newMedia = {
+                        id: Date.now(),
+                        category: cat,
+                        name: file.name,
+                        url: e.target.result // Consideramos que un archivo base64 validado funciona para el mock
+                    };
+                    mockGallery.push(newMedia);
+                    // Guardar persistencia temporalmente en LocalStorage para el Mock
+                    localStorage.setItem('lp_creator_gallery', JSON.stringify(mockGallery));
+                    alert('✅ Imagen clasificada y guardada en tu Galería Personal.');
+                    
+                    document.getElementById('gallery-filter').value = newMedia.category;
+                    switchMediaTab('gallery');
+                    fileInput.value = ''; // limpiar
                 };
-                mockGallery.push(newMedia);
-                // Guardar persistencia temporalmente en LocalStorage para el Mock
-                localStorage.setItem('lp_creator_gallery', JSON.stringify(mockGallery));
-                alert('✅ Imagen clasificada y guardada en tu Galería Personal.');
-                
-                document.getElementById('gallery-filter').value = newMedia.category;
-                switchMediaTab('gallery');
+                img.onerror = function() {
+                    errorMsg.innerText = `⚠️ El archivo seleccionado está corrupto o no se pudo procesar como imagen.`;
+                    errorMsg.style.display = 'block';
+                };
+                img.src = e.target.result;
             };
             reader.readAsDataURL(file);
         }
