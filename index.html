@@ -758,6 +758,13 @@
             
             closeCommitModal();
 
+            if (pendingAction.includes('Publicar')) {
+                // Generar un hash o id aleatorio para simular una URL real, o usar el ID
+                const lpUrlId = targetLpId ? targetLpId.replace('#', '') : Math.floor(Math.random() * 90000) + 10000;
+                const dynamicUrl = `https://promos.newry.com/lp/${lpUrlId}`;
+                alert(`✅ ¡Landing Page publicada con éxito!\n\nSe ha generado la siguiente URL de producción:\n${dynamicUrl}`);
+            }
+
             // Si la accion era Publicar o Guardar (las del editor), volvemos al panel principal
             if (pendingAction.includes('Guardar') || pendingAction.includes('Publicar')) {
                 switchView('dashboard');
