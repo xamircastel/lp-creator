@@ -68,9 +68,11 @@ Elementos estándar traídos directamente de la configuración del sistema (ej. 
 
 ## 5. Requerimientos Funcionales Especiales
 
-### 5.1. Integración de Scripts Externos (GTM)
+### 5.1. Integración de Scripts y Tracking de Eventos
 
-El editor debe contar con una sección específica ("Tags/Scripts") que permita al usuario de marketing pegar e insertar fragmentos de código, como contenedores de **Google Tag Manager (GTM)** o píxeles de seguimiento. La herramienta se encargará de inyectar este script correctamente en el código HTML de la Landing Page generada.
+El editor debe contar con una sección integrada ("Tags/Scripts/Eventos") que permita dos funcionalidades críticas de analítica:
+1. **Gestor Avanzado de Scripts (GTM):** Permite al usuario pegar fragmentos de código, decidiendo la **Sección HTML** (head o body), la **Posición de Inyección** (comienzo, medio, final) y la **Página Objetivo** del flujo (todas, paso 1, paso 2, o página de éxito).
+2. **Tracking de Eventos y Funnel Customizado:** Herramienta interactiva para declarar qué eventos deben ser rastreados (ej. `page_view`, `btn_click`). Permite definir el **Disparador (Trigger)** (onLoad, onClick, onChange), el **Elemento Objetivo** y enviar esta carga útil a un Endpoint global de recepción, facilitando a herramientas externas el armado de reportes de embudos/funnels.
 
 ### 5.2. Módulo de Consentimiento y Privacidad (Compliance)
 
@@ -78,7 +80,26 @@ La plataforma debe proveer una funcionalidad (ej. un *toggle* o menú de configu
 
 * Banners de aceptación/rechazo de Cookies.
 * Avisos de consentimiento explícito sobre políticas de tratamiento de datos digitales.
-* *Nota:* Crítico para despliegues en Europa (como los de Movistar, Orange, Yoigo, MasMovil en España).
+* *Nota:* Crítico para despliegues en España y el EEE.
+
+### 5.3. Placeholders y Contexto Dinámico
+
+Los textos ingresados por los usuarios (títulos, descripciones, botones) soportan la inyección de **Placeholders/Variables** como `{{servicio}}`, `{{operadora}}`, `{{pais}}` y `{{precio}}`. El sistema renderiza transparentemente estas variables basándose en el contexto del país y operadora en el que se está creando/clonando la Landing, garantizando reutilización de textos.
+
+### 5.4. Galería Multimedia y Validaciones Categóricas
+
+Herramienta centralizada que actúa como repositorio base de imágenes. Al subir *assets*, el usuario debe clasificarlos (Logo, Hero Promocional, u Otros), lo cual desencadena **validaciones fuertes de formato y tamaño** automáticas (Ej. forzando peso menor a 500KB para Logos y resoluciones adecuadas). La inserción de recursos apoya su reutilización en futuros templates.
+
+### 5.5. Panel de Previsualización y Control de Flujos
+
+La vista móvil simulada dispone de una integración mejorada para la navegación de flujos:
+* Mediante un panel de control con botones explícitos (**Volver / Siguiente**) ubicado debajo del visualizador, el operador puede avanzar libremente en las maquetas paso a paso.
+* Todos los diferentes flujos (Datos a 1 Click o Wi-Fi con OTP) terminan obligatoriamente en una pantalla de simulación de **Confirmación/Suscripción Exitosa** visible en el editor.
+
+### 5.6. Clonación Ágil e Inteligencia Artificial (IA)
+
+1. **Clonar LP:** Opción directa desde el dashboard para heredar el diseño y variables completas de una LP a una nueva instancia.
+2. **Asistencia de IA:** Integración conceptual en el editor que utiliza (mediante mock-ups visuales) modelos de IA fundacionales para la **Generación de Copywriting** y **Creación Mágica de Imágenes** adaptados al estilo de la campaña.
 
 ## 6. Consideraciones para el Equipo Técnico (Handoff)
 
