@@ -127,8 +127,14 @@
                     </div>
                     <div class="form-group">
                         <label>Operadora</label>
-                        <select id="filter-operadora" disabled onchange="checkLoadReady()">
+                        <select id="filter-operadora" disabled onchange="updateFilterServicios()">
                             <option value="" disabled selected>Seleccione Operadora...</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Servicio</label>
+                        <select id="filter-servicio" disabled onchange="checkLoadReady()">
+                            <option value="" disabled selected>Seleccione Servicio...</option>
                         </select>
                     </div>
                     <button id="btn-load" class="btn btn-primary" onclick="loadTableData()" disabled style="opacity: 0.5; cursor: not-allowed;">Cargar LPs</button>
@@ -198,6 +204,7 @@
                                     <span style="background: #e2e8f0; padding: 4px 8px; border-radius: 4px; font-family: monospace; font-weight: bold; color: #1e293b;" id="ctx-id">#10592</span>
                                     <span style="background: #f1f5f9; padding: 4px 8px; border-radius: 4px; border: 1px solid #cbd5e1;">📍 País: <strong id="ctx-pais">España</strong></span>
                                     <span style="background: #f1f5f9; padding: 4px 8px; border-radius: 4px; border: 1px solid #cbd5e1;">📱 Operadora: <strong id="ctx-operadora">Orange</strong></span>
+                                    <span style="background: #f1f5f9; padding: 4px 8px; border-radius: 4px; border: 1px solid #cbd5e1;">🎮 Servicio: <strong id="ctx-servicio">Juegos VIP</strong></span>
                                 </div>
                             </div>
                             <div style="display: flex; gap: 10px; align-items: center;">
@@ -418,10 +425,16 @@
                     <option value="UAE">Emiratos Árabes (UAE)</option>
                 </select>
             </div>
-            <div class="form-group" style="margin-bottom: 20px;">
+            <div class="form-group" style="margin-bottom: 15px;">
                 <label>Operadora</label>
-                <select id="create-operadora" disabled onchange="checkCreateReady()">
+                <select id="create-operadora" disabled onchange="updateCreateServicios()">
                     <option value="" disabled selected>Seleccione Operadora...</option>
+                </select>
+            </div>
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label>Servicio</label>
+                <select id="create-servicio" disabled onchange="checkCreateReady()">
+                    <option value="" disabled selected>Seleccione Servicio...</option>
                 </select>
             </div>
 
@@ -434,42 +447,99 @@
 
     <script>
         // Datos de Paises y Operadoras
-        const operatorMap = {
-            'Bangladesh': ['BANGLALINK', 'GRAMEEPHONE', 'ROBI'],
-            'España': ['llamaYa', 'MasMovil', 'Movistar', 'Orange', 'Yoigo'],
-            'Filipinas': ['Smart Communications'],
-            'Kasajistan': ['Mobily', 'STC', 'Zain'],
-            'Polonia': ['Netia', 'Orange', 'Play', 'Plus', 'T-mobile'],
-            'Sudafrica': ['Vodacom'],
-            'UAE': ['Etisalat']
+        const treeData = {
+            'Bangladesh': {
+                'BANGLALINK': ['MegaGames', 'VOD Premium'],
+                'GRAMEEPHONE': ['Superfunbox'],
+                'ROBI': ['Superfunbox', 'Juegos VIP']
+            },
+            'España': {
+                'llamaYa': ['Suscripción Básica'],
+                'MasMovil': ['Juegos VIP', 'eBooks Más'],
+                'Movistar': ['Kids Zone', 'Juegos VIP', 'Salud 360'],
+                'Orange': ['Superfunbox', 'Juegos VIP', 'eBooks Premium'],
+                'Yoigo': ['Superfunbox']
+            },
+            'Filipinas': {
+                'Smart Communications': ['Juegos VIP']
+            },
+            'Kasajistan': {
+                'Mobily': ['VOD Premium'], 'STC': ['MegaGames'], 'Zain': ['Superfunbox']
+            },
+            'Polonia': {
+                'Netia': ['Juegos VIP'], 'Orange': ['Superfunbox', 'eBooks Premium'], 'Play': ['Kids Zone'], 'Plus': ['MegaGames'], 'T-mobile': ['VOD Premium']
+            },
+            'Sudafrica': {
+                'Vodacom': ['Superfunbox', 'Juegos VIP']
+            },
+            'UAE': {
+                'Etisalat': ['VOD Premium', 'MegaGames']
+            }
+        };
+
+        const serviceInfo = {
+            'Superfunbox': '2,99€ / Semana',
+            'Juegos VIP': '1,50€ / Semana',
+            'eBooks Premium': '3,99€ / Mes',
+            'VOD Premium': '4,50€ / Mes',
+            'MegaGames': '2,00€ / Semana',
+            'Kids Zone': '1,00€ / Semana',
+            'Salud 360': '5,00€ / Mes',
+            'Suscripción Básica': '1,00€ / Semana',
+            'eBooks Más': '2,50€ / Mes'
         };
 
         function updateOperadoras() {
             const paisInfo = document.getElementById('filter-pais').value;
             const opSelect = document.getElementById('filter-operadora');
+            const servSelect = document.getElementById('filter-servicio');
             
             // Resetear y habilitar o deshabilitar
             opSelect.innerHTML = '<option value="" disabled selected>Seleccione Operadora...</option>';
+            if(servSelect) {
+                servSelect.innerHTML = '<option value="" disabled selected>Seleccione Servicio...</option>';
+                servSelect.disabled = true;
+            }
+            
             document.getElementById('data-table').style.display = 'none';
             document.getElementById('empty-state').style.display = 'block';
             checkLoadReady();
             
-            if (paisInfo && operatorMap[paisInfo]) {
+            if (paisInfo && treeData[paisInfo]) {
                 opSelect.disabled = false;
-                operatorMap[paisInfo].forEach(op => {
+                Object.keys(treeData[paisInfo]).forEach(op => {
                     opSelect.innerHTML += `<option value="${op}">${op}</option>`;
                 });
             } else {
                 opSelect.disabled = true;
             }
         }
+        
+        function updateFilterServicios() {
+            const paisInfo = document.getElementById('filter-pais').value;
+            const opInfo = document.getElementById('filter-operadora').value;
+            const servSelect = document.getElementById('filter-servicio');
+            
+            servSelect.innerHTML = '<option value="" disabled selected>Seleccione Servicio...</option>';
+            checkLoadReady();
+            
+            if (paisInfo && opInfo && treeData[paisInfo][opInfo]) {
+                servSelect.disabled = false;
+                treeData[paisInfo][opInfo].forEach(svc => {
+                    servSelect.innerHTML += `<option value="${svc}">${svc}</option>`;
+                });
+            } else {
+                servSelect.disabled = true;
+            }
+        }
 
         function checkLoadReady() {
             const paisInfo = document.getElementById('filter-pais').value;
             const opInfo = document.getElementById('filter-operadora').value;
+            const servInfo = document.getElementById('filter-servicio')?.value;
             const btnLoad = document.getElementById('btn-load');
 
-            if (paisInfo && opInfo) {
+            if (paisInfo && opInfo && servInfo) {
                 btnLoad.disabled = false;
                 btnLoad.style.opacity = '1';
                 btnLoad.style.cursor = 'pointer';
@@ -483,16 +553,17 @@
         function loadTableData() {
             document.getElementById('empty-state').style.display = 'none';
             document.getElementById('data-table').style.display = 'table';
-            
+
             // Simular actualizar los datos de la tabla basados en la selección
             const paisInfo = document.getElementById('filter-pais').value;
             const opInfo = document.getElementById('filter-operadora').value;
+            const servInfo = document.getElementById('filter-servicio').value;
             const tbody = document.querySelector('.lp-table tbody');
             tbody.innerHTML = `
                 <tr>
                     <td><span style="font-family: monospace; background: #e2e8f0; padding: 3px 6px; border-radius: 4px; font-size: 13px; color: #475569;">#10592</span></td>
                     <td>
-                        <strong>servicio-test-${opInfo.toLowerCase()}-01</strong><br>
+                        <strong>${servInfo.toLowerCase().replace(/\s/g, '-')}-${opInfo.toLowerCase()}-01</strong><br>
                         <small>https://servicio.zed.com/${opInfo.toLowerCase()}/subscribe/?id=1</small>
                     </td>
                     <td>Template-${opInfo}-Base</td>
@@ -500,10 +571,7 @@
                     <td><span class="status-badge status-active">Activo</span></td>
                     <td>02 Mar 2026<br><small style="color: #64748b;">(R. Álvarez)</small></td>
                     <td>
-                        <button class="btn btn-outline" onclick="editLP('${paisInfo}', '${opInfo}')">✏️ Editar</button>
-                        <button class="btn btn-danger" onclick="showCommitModal('Deshabilitar LP')">🚫 Deshabilitar</button>
-                    </td>
-                </tr>
+                        <button class="btn btn-outline" onclick="editLP('${paisInfo}', '${opInfo}', '${servInfo}')">✏️ Editar</button>
             `;
         }
 
@@ -615,9 +683,10 @@
         function checkCreateReady() {
             const paisInfo = document.getElementById('create-pais').value;
             const opInfo = document.getElementById('create-operadora').value;
+            const servInfo = document.getElementById('create-servicio')?.value;
             const btnStart = document.getElementById('btn-start-create');
 
-            if (paisInfo && opInfo) {
+            if (paisInfo && opInfo && servInfo) {
                 btnStart.disabled = false;
                 btnStart.style.opacity = '1';
                 btnStart.style.cursor = 'pointer';
@@ -632,21 +701,20 @@
             closeCreateModal();
             const pais = document.getElementById('create-pais').value;
             const op = document.getElementById('create-operadora').value;
-            
+            const serv = document.getElementById('create-servicio')?.value;
+
             document.getElementById('editor-template-title').innerText = `Creando Nueva Landing Page`;
             document.getElementById('ctx-id').innerText = "#NUEVO";
             document.getElementById('ctx-id').style.backgroundColor = "#dcfce3";
             document.getElementById('ctx-id').style.color = "#166534";
             document.getElementById('ctx-pais').innerText = pais;
             document.getElementById('ctx-operadora').innerText = op;
-            
+            // Additional context element could be added for testing, for now we will just use standard ones
+
             switchView('editor');
         }
 
-        function editLP(paisName, opName, lpId = "#10592") {
-            document.getElementById('editor-template-title').innerText = `Editando Landing Page Existente`;
-            document.getElementById('ctx-id').innerText = lpId;
-            document.getElementById('ctx-id').style.backgroundColor = "#e2e8f0";
+        function editLP(paisName, opName, servName, lpId = "#10592") {
             document.getElementById('ctx-id').style.color = "#1e293b";
             document.getElementById('ctx-pais').innerText = paisName;
             document.getElementById('ctx-operadora').innerText = opName;
