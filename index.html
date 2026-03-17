@@ -666,17 +666,39 @@
         function updateCreateOperadoras() {
             const paisInfo = document.getElementById('create-pais').value;
             const opSelect = document.getElementById('create-operadora');
-            
+            const servSelect = document.getElementById('create-servicio');
+
             opSelect.innerHTML = '<option value="" disabled selected>Seleccione Operadora...</option>';
+            servSelect.innerHTML = '<option value="" disabled selected>Seleccione Servicio...</option>';
+            servSelect.disabled = true;
             checkCreateReady();
-            
-            if (paisInfo && operatorMap[paisInfo]) {
+
+            if (paisInfo && treeData[paisInfo]) {
                 opSelect.disabled = false;
-                operatorMap[paisInfo].forEach(op => {
+                Object.keys(treeData[paisInfo]).forEach(op => {
                     opSelect.innerHTML += `<option value="${op}">${op}</option>`;
                 });
             } else {
                 opSelect.disabled = true;
+            }
+        }
+
+        function updateCreateServicios() {
+            const paisInfo = document.getElementById('create-pais').value;
+            const opInfo = document.getElementById('create-operadora').value;
+            const servSelect = document.getElementById('create-servicio');
+
+            servSelect.innerHTML = '<option value="" disabled selected>Seleccione Servicio...</option>';
+            checkCreateReady();
+
+            if (paisInfo && opInfo && treeData[paisInfo] && treeData[paisInfo][opInfo]) {
+                servSelect.disabled = false;
+                treeData[paisInfo][opInfo].forEach(serv => {
+                    const priceExt = serviceInfo[serv] ? ` - ${serviceInfo[serv]}` : '';
+                    servSelect.innerHTML += `<option value="${serv}">${serv}${priceExt}</option>`;
+                });
+            } else {
+                servSelect.disabled = true;
             }
         }
 
