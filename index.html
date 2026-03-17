@@ -170,6 +170,7 @@
                             <td>Hace 2 h (R. Álvarez)</td>
                             <td>
                                 <button class="btn btn-outline" onclick="switchView('editor')">✏️ Editar</button>
+                                <button class="btn btn-primary" style="background:#eab308; color:white; border:none; padding:8px 15px; border-radius:4px; font-weight:600; cursor:pointer;" onclick="cloneLP('España', 'Orange España', 'e-komics', '#99221')">📋 Clonar</button>
                                 <button class="btn btn-danger" onclick="showCommitModal('Deshabilitar LP')">🚫 Deshabilitar</button>
                             </td>
                         </tr>
@@ -184,6 +185,7 @@
                             <td>Hace 1 día (A. Bernal)</td>
                             <td>
                                 <button class="btn btn-outline" onclick="switchView('editor')">✏️ Editar</button>
+                                <button class="btn btn-primary" style="background:#eab308; color:white; border:none; padding:8px 15px; border-radius:4px; font-weight:600; cursor:pointer;" onclick="cloneLP('España', 'Orange España', 'fitlife', '#99222')">📋 Clonar</button>
                                 <button class="btn btn-danger" onclick="showCommitModal('Deshabilitar LP')">🚫 Deshabilitar</button>
                             </td>
                         </tr>
@@ -579,6 +581,10 @@
                     <td>02 Mar 2026<br><small style="color: #64748b;">(R. Álvarez)</small></td>
                     <td>
                         <button class="btn btn-outline" onclick="editLP('${paisInfo}', '${opInfo}', '${servInfo}')">✏️ Editar</button>
+                        <button class="btn btn-primary" style="background:#eab308; color:white; border:none; padding:8px 15px; border-radius:4px; font-weight:600; cursor:pointer;" onclick="cloneLP('${paisInfo}', '${opInfo}', '${servInfo}')">📋 Clonar</button>
+                        <button class="btn btn-danger" onclick="showCommitModal('Deshabilitar LP')">🚫 Deshabilitar</button>
+                    </td>
+                </tr>
             `;
         }
 
@@ -758,8 +764,21 @@
         }
 
         function editLP(paisName, opName, servName, lpId = "#10592") {
+            document.getElementById('editor-template-title').innerText = `Editando Landing Page Existente`;
+            document.getElementById('ctx-id').innerText = lpId;
+            document.getElementById('ctx-id').style.backgroundColor = "#e2e8f0";
             document.getElementById('ctx-id').style.color = "#1e293b";
             document.getElementById('ctx-pais').innerText = paisName;
+            document.getElementById('ctx-operadora').innerText = opName;
+
+            switchView('editor');
+        }
+
+        function cloneLP(paisName, opName, servName, lpId = "#10592") {
+            document.getElementById('editor-template-title').innerText = `🎨 Clonando Landing Page (Base: ${lpId})`;
+            document.getElementById('ctx-id').innerText = "#NUEVO (Clon)";
+            document.getElementById('ctx-id').style.backgroundColor = "#fef08a";
+            document.getElementById('ctx-id').style.color = "#854d0e";
             document.getElementById('ctx-operadora').innerText = opName;
             
             switchView('editor');
