@@ -471,7 +471,8 @@
                             <div class="frame-notch"></div>
                             
                             <div id="preview-bg">
-                                <img src="Logo_Newry.png" id="preview-logo" height="30" onerror="this.src='https://via.placeholder.com/100x30/ffffff/1e293b?text=CarrierLogo'" style="margin-top: 10px; background: rgba(255,255,255,0.8); padding: 5px; border-radius: 5px; max-width: 80%; object-fit: contain;">
+                                <div id="preview-main-content">
+                                    <img src="Logo_Newry.png" id="preview-logo" height="30" onerror="this.src='https://via.placeholder.com/100x30/ffffff/1e293b?text=CarrierLogo'" style="margin-top: 10px; background: rgba(255,255,255,0.8); padding: 5px; border-radius: 5px; max-width: 80%; object-fit: contain;">
                                 <h2 id="preview-title">¡Disfruta los Mejores Cómics!</h2>
                                 <img id="preview-hero" src="" style="max-width: 100%; border-radius: 8px; margin-bottom: 20px; display: none; object-fit: contain;">
                                 
@@ -487,11 +488,32 @@
                                 <input type="number" id="preview-otp" placeholder="PIN de 4 dígitos">
 
                                 <button id="preview-btn">Suscribirse con obligación de pago</button>
+                                </div>
+                                <div id="preview-success-content" style="display: none; align-items: center; justify-content: center; flex-direction: column; text-align: center; padding: 20px; margin-top: 40px;">
+                                    <div style="width: 60px; height: 60px; background: #22c55e; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 30px; margin-bottom: 20px;">✓</div>
+                                    <h2 style="margin-bottom: 10px; font-size: 22px;">¡Suscripción Exitosa!</h2>
+                                    <p style="font-size: 14px; opacity: 0.9;">Ya tienes acceso a tu contenido.</p>
+                                    <button style="margin-top: 20px; padding: 10px 20px; border-radius: 8px; border: none; background: rgba(0,0,0,0.2); color: inherit; font-weight: bold; cursor: pointer;">Ir al Portal &rarr;</button>
+                                </div>
                             </div>
                             
                             <div class="preview-footer">
                                 <strong>Legal:</strong> Al pulsar enviar aceptas las condiciones generales de Orange y Newry. El servicio se renovará automáticamente... (Texto fijo e inmodificable traído de la base de datos).
                             </div>
+                        </div>
+
+                        <!-- Panel de Navegación de Flujo Visible -->
+                        <div style="margin-top: 20px; display: flex; align-items: center; justify-content: space-between; width: 100%; background: #ffffff; padding: 10px 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); box-sizing: border-box;">
+                            <button id="nav-btn-prev" onclick="goToStep(-1)" style="background: #f1f5f9; border: 1px solid #cbd5e1; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; color: #475569; display: flex; align-items: center; gap: 5px;" disabled>
+                                &larr; Volver
+                            </button>
+                            <div style="text-align: center;">
+                                <span id="nav-step-name" style="display: block; font-size: 12px; font-weight: bold; color: #334155;">Página 1</span>
+                                <span id="nav-step-dots" style="display: block; font-size: 10px; color: #94a3b8; margin-top: 2px;">1 de 2</span>
+                            </div>
+                            <button id="nav-btn-next" onclick="goToStep(1)" style="background: #3b82f6; border: 1px solid #2563eb; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; color: white; display: flex; align-items: center; gap: 5px;">
+                                Sig. &rarr;
+                            </button>
                         </div>
                     </div>
 
@@ -800,7 +822,7 @@
         }
 
         let currentFlow = 'datos';
-        let currentWifiStep = 1;
+        let currentStep = 1; // Unificado para ambos flujos
 
         // Lógica Preview en Tiempo Real
         function updatePreview() {
@@ -840,19 +862,49 @@
                 heroImg.style.display = 'none';
             }
 
-            // Manejo de pantallas según el flujo
+            const maxSteps = currentFlow === 'datos' ? 2 : 3;
+            
+            // Actualizar UI de Navegación inferior
+            document.getElementById('nav-step-dots').innerText = `${currentStep} de ${maxSteps}`;
+            document.getElementById('nav-btn-prev').disabled = currentStep === 1;
+            document.getElementById('nav-btn-prev').style.opacity = currentStep === 1 ? '0.5' : '1';
+            document.getElementById('nav-btn-prev').style.cursor = currentStep === 1 ? 'not-allowed' : 'pointer';
+            
+            document.getElementById('nav-btn-next').disabled = currentStep === maxSteps;
+            document.getElementById('nav-btn-next').style.opacity = currentStep === maxSteps ? '0.5' : '1';
+            document.getElementById('nav-btn-next').style.cursor = currentStep === maxSteps ? 'not-allowed' : 'pointer';
+
+            const mainContent = document.getElementById('preview-main-content');
+            const successContent = document.getElementById('preview-success-content');
+
+            // Determinar si estamos en el paso final (Éxito)
+            if (currentStep === maxSteps) {
+                mainContent.style.display = 'none';
+                successContent.style.display = 'flex';
+                document.getElementById('nav-step-name').innerText = 'Confirmación';
+                return; // Cortar aquí la lógica, lo demás no importa
+            } else {
+                mainContent.style.display = 'flex';
+                successContent.style.display = 'none';
+            }
+
+            // Manejo de pantallas "Main" según el flujo
             if (currentFlow === 'datos') {
+                document.getElementById('nav-step-name').innerText = 'Suscripción 1-Click';
                 document.getElementById('preview-btn').innerText = parsedBtnText || 'Continuar';
                 document.getElementById('preview-msisdn').style.display = 'none';
                 document.getElementById('preview-otp').style.display = 'none';
                 document.getElementById('preview-legal-wifi').style.display = 'none';
+                
             } else if (currentFlow === 'wifi') {
-                if (currentWifiStep === 1) { // Pedir número
+                if (currentStep === 1) { // Pedir número
+                    document.getElementById('nav-step-name').innerText = 'Paso 1: MSISDN';
                     document.getElementById('preview-btn').innerText = "Recibir PIN";
                     document.getElementById('preview-msisdn').style.display = 'block';
                     document.getElementById('preview-otp').style.display = 'none';
                     document.getElementById('preview-legal-wifi').style.display = 'block';
-                } else { // Validar PIN
+                } else if (currentStep === 2) { // Validar PIN
+                    document.getElementById('nav-step-name').innerText = 'Paso 2: OTP / PIN';
                     document.getElementById('preview-btn').innerText = parsedBtnText || 'Continuar';
                     document.getElementById('preview-msisdn').style.display = 'none';
                     document.getElementById('preview-otp').style.display = 'block';
@@ -864,18 +916,17 @@
         // Cambio de Flujos
         function switchFlow(flow) {
             currentFlow = flow;
+            currentStep = 1; // Reiniciar
             document.getElementById('btn-flow-datos').className = flow === 'datos' ? 'flow-btn active' : 'flow-btn';
             document.getElementById('btn-flow-wifi').className = flow === 'wifi' ? 'flow-btn active' : 'flow-btn';
-            
-            document.getElementById('wifi-steps-indicator').style.display = flow === 'wifi' ? 'block' : 'none';
-            if (flow === 'wifi') switchWifiStep(1); // Siempre empezar en paso 1 al cambiar
-            else updatePreview();
+            updatePreview();
         }
 
-        function switchWifiStep(step) {
-            currentWifiStep = step;
-            document.getElementById('dot-wifi-1').className = step === 1 ? 'step-dot active' : 'step-dot';
-            document.getElementById('dot-wifi-2').className = step === 2 ? 'step-dot active' : 'step-dot';
+        function goToStep(direction) {
+            const maxSteps = currentFlow === 'datos' ? 2 : 3;
+            currentStep += direction;
+            if (currentStep < 1) currentStep = 1;
+            if (currentStep > maxSteps) currentStep = maxSteps;
             updatePreview();
         }
 
