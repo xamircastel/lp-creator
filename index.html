@@ -705,7 +705,7 @@
         function executeCommit() {
             const message = document.getElementById('commitMessage').value.trim();
             if (!message) {
-                ;
+                alert("Por favor, ingresa un comentario o justificación.");
                 return;
             }
 
@@ -753,8 +753,9 @@
                     <td><span class="status-badge" style="${badgeStyles}">${iconText}</span></td>
                 </tr>`;
 
-
-            ;
+                logsTbody.insertAdjacentHTML('afterbegin', newRow);
+            }
+            
             closeCommitModal();
 
             // Si la accion era Publicar o Guardar (las del editor), volvemos al panel principal
