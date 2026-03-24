@@ -43,10 +43,11 @@ Una vez en el editor (ya sea creando una LP nueva a partir del template o editan
 
 #### A. Elementos Modificables (Diseño a medida)
 
-* Color de fondo (Tema).
+* Color de fondo (Tema), con soporte para colores en formato Hexadecimal, pudiendo elegir entre fondos sólidos o gradientes lineales.
 * Imágenes y assets gráficos a mostrar.
 * Color del texto general del cuerpo de la página.
 * Color de fondo y color de texto para los botones (CTA).
+* Animaciones CSS de los Elementos: Posibilidad de asignar efectos en reposo (ej. Pulse, Float, Color Shift, Glow, Bounce) y respuestas interactivas al hacer clic (Click Feedback) en botones y títulos.
 * Textos promocionales (sujetos a aprobación).
 
 #### B. Elementos Fijos (No Modificables por Marketing)
@@ -70,9 +71,9 @@ Elementos estándar traídos directamente de la configuración del sistema (ej. 
 
 ### 5.1. Integración de Scripts y Tracking de Eventos
 
-El editor debe contar con una sección integrada ("Tags/Scripts/Eventos") que permita dos funcionalidades críticas de analítica:
+El editor debe contar con una sección integrada ("Tags/Scripts/Eventos") que permita escalar las capacidades críticas de analítica:
 1. **Gestor Avanzado de Scripts (GTM):** Permite al usuario pegar fragmentos de código, decidiendo la **Sección HTML** (head o body), la **Posición de Inyección** (comienzo, medio, final) y la **Página Objetivo** del flujo (todas, paso 1, paso 2, o página de éxito).
-2. **Tracking de Eventos y Funnel Customizado:** Herramienta interactiva para declarar qué eventos deben ser rastreados (ej. `page_view`, `btn_click`). Permite definir el **Disparador (Trigger)** (onLoad, onClick, onChange), el **Elemento Objetivo** y enviar esta carga útil a un Endpoint global de recepción, facilitando a herramientas externas el armado de reportes de embudos/funnels.
+2. **Resumen de Eventos (Solo Lectura):** Para mantener un esquema simple, el framework no incluye un constructor de triggers personalizados por el diseñador. En su lugar, el sistema cuenta con un set estándar de eventos implementado vía SDK corporativo. En la parte inferior del simulador/editor de Landing, se muestra una placa informativa estática para tener visibilidad de qué hitos se están traqueando automáticamente (`page_view`, `click_cta`, `submit_msisdn`, `submit_pin`, `success_subscription`).
 
 ### 5.2. Módulo de Consentimiento y Privacidad (Compliance)
 
@@ -100,6 +101,13 @@ La vista móvil simulada dispone de una integración mejorada para la navegació
 
 1. **Clonar LP:** Opción directa desde el dashboard para heredar el diseño y variables completas de una LP a una nueva instancia.
 2. **Asistencia de IA:** Integración conceptual en el editor que utiliza (mediante mock-ups visuales) modelos de IA fundacionales para la **Generación de Copywriting** y **Creación Mágica de Imágenes** adaptados al estilo de la campaña.
+
+### 5.7. Módulo Independiente de Documentos Legales (T&C)
+
+La plataforma contiene un módulo autónomo para la **Gestión Centralizada de Términos y Condiciones**:
+* Permite cargar archivos físicos (PDF o HTML) y asociarlos estáticamente a una tripleta de País > Operadora > Servicio (Ej: España > Orange > Cómics HUB).
+* Brinda dos alternativas para pintar el documento de cara al usuario en la página final: "Descarga Directa (.pdf)" o "Incrustado en Landing (Iframe)".
+* Al tener un repositorio centralizado, la actualización de un solo documento legal se propaga e impacta masiva y retroactivamente en todas las LPs que apunten a ese servicio, evitando el riesgo de URLs rotas o desactualizadas por las áreas legales.
 
 ## 6. Consideraciones para el Equipo Técnico (Handoff)
 
