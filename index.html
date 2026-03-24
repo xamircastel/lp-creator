@@ -514,63 +514,6 @@
                             }
                         </script>
 
-                        <!-- SECCIÓN 4: GESTOR DE EVENTOS / TRACKING -->
-                        <div class="section-title" style="margin-top: 20px;">📊 Eventos y Tracking Personalizado</div>
-                        
-                        <div class="form-group" style="margin-bottom: 15px;">
-                            <label style="font-size: 11px; color:#475569;">Endpoint Global de Recepción de Eventos (opcional)</label>
-                            <input type="text" id="input-tracking-endpoint" class="form-control" placeholder="Ej. https://api.tu-dominio.com/webhook/events">
-                        </div>
-
-                        <div class="form-group" style="margin-bottom: 10px;">
-                            <label style="display: flex; justify-content: space-between; align-items: center; font-size: 11px; color:#475569; font-weight:bold;">
-                                Rutas de Eventos
-                                <button type="button" class="btn btn-outline" style="padding: 2px 8px; font-size: 11px; font-weight: bold; cursor: pointer;" onclick="addTrackingEvent()">➕ Añadir Evento</button>
-                            </label>
-                            <span style="font-size: 10px; color:#64748b; margin-top:4px; display:block;">Declara los eventos que se dispararán en la LP para reportar al funnel analítico.</span>
-                        </div>
-
-                        <div id="events-container" style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px;">
-                            <!-- Dynamic Events GO HERE -->
-                        </div>
-
-                        <script>
-                            function addTrackingEvent() {
-                                const container = document.getElementById('events-container');
-                                const newEvent = document.createElement('div');
-                                newEvent.className = 'event-card';
-                                newEvent.style.cssText = 'border: 1px solid #e2e8f0; border-radius: 6px; padding: 12px; background: #f8fafc; position: relative;';
-                                newEvent.innerHTML = `
-                                    <button type="button" class="btn btn-danger" style="position: absolute; top: 10px; right: 10px; padding: 2px 6px; font-size: 10px; border-radius: 4px; cursor: pointer;" onclick="this.parentElement.remove()" title="Eliminar evento">🗑️</button>
-                                    
-                                    <label style="font-size: 10px; color: #475569; display: block; margin-bottom: 4px; font-weight:600;">Nombre del Evento</label>
-                                    <input type="text" class="form-control" placeholder="Ej. btn_click_suscribir, page_view..." style="margin-bottom: 10px; padding-right: 30px; font-size: 11px;">
-                                    
-                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                                        <div>
-                                            <label style="font-size: 10px; color: #475569; display: block; margin-bottom: 4px; font-weight:600;">Disparador (Trigger)</label>
-                                            <select class="form-control" style="font-size: 11px; padding: 6px;">
-                                                <option value="click">Al hacer Clic (onClick)</option>
-                                                <option value="load">Al Cargar Página (onLoad)</option>
-                                                <option value="change">Al Cambiar Estado (onChange)</option>
-                                            </select>
-                                        </div>
-                                        <div>
-                                            <label style="font-size: 10px; color: #475569; display: block; margin-bottom: 4px; font-weight:600;">Elemento Objetivo</label>
-                                            <select class="form-control" style="font-size: 11px; padding: 6px;">
-                                                <option value="document">Página Completa</option>
-                                                <option value="btn-submit">Botón Principal (Acción)</option>
-                                                <option value="checkbox-terms">Checkbox Legales</option>
-                                                <option value="input-msisdn">Campo de Número (MSISDN)</option>
-                                                <option value="input-pin">Campo de PIN (OTP)</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                `;
-                                container.appendChild(newEvent);
-                            }
-                        </script>
-
                         <div style="margin-top: 20px; font-size: 11px; color: #94a3b8; border-top: 1px dashed #cbd5e1; padding-top: 10px;">
                             Registro de cambios: Ninguno (Creación inicial).
                         </div>
@@ -642,6 +585,22 @@
                             <button id="nav-btn-next" onclick="goToStep(1)" style="background: #3b82f6; border: 1px solid #2563eb; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; color: white; display: flex; align-items: center; gap: 5px;">
                                 Sig. &rarr;
                             </button>
+                        </div>
+                        
+                        <!-- SECCIÓN INFORMATIVA DE EVENTOS -->
+                        <div style="margin-top: 20px; width: 100%; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px; box-sizing: border-box;">
+                            <h4 style="margin: 0 0 10px 0; font-size: 12px; color: #334155; display: flex; align-items: center; gap: 5px;">
+                                📊 Resumen de Eventos (Solo Lectura)
+                            </h4>
+                            <p style="font-size: 11px; color: #64748b; margin-top: 0; margin-bottom: 12px;">Se están trackeando automáticamente los siguientes eventos corporativos:</p>
+                            
+                            <ul style="margin: 0; padding-left: 15px; font-size: 11px; color: #475569; line-height: 1.6;">
+                                <li><strong>page_view:</strong> Al cargar cada página de la landing.</li>
+                                <li><strong>click_cta:</strong> Al hacer clic en el botón principal ("Suscribirse").</li>
+                                <li><strong>submit_msisdn:</strong> Al rellenar e intentar enviar el MSISDN (Paso 1).</li>
+                                <li><strong>submit_pin:</strong> Al intentar validar el código PIN (Paso 2).</li>
+                                <li><strong>success_subscription:</strong> Tras la validación correcta y carga de la Thank You Page.</li>
+                            </ul>
                         </div>
                     </div>
 
