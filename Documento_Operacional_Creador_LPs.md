@@ -43,18 +43,20 @@ Una vez en el editor (ya sea creando una LP nueva a partir del template o editan
 
 #### A. Elementos Modificables (Diseño a medida)
 
-* Color de fondo (Tema), con soporte para colores en formato Hexadecimal, pudiendo elegir entre fondos sólidos o gradientes lineales.
+* Color de fondo (Tema), con soporte para colores en formato Hexadecimal, pudiendo elegir entre fondos sólidos, gradientes lineales (con selección de dirección) o una imagen de fondo (subida de archivos).
 * Imágenes y assets gráficos a mostrar.
 * Color del texto general del cuerpo de la página.
 * Color de fondo y color de texto para los botones (CTA).
 * Animaciones CSS de los Elementos: Posibilidad de asignar efectos en reposo (ej. Pulse, Float, Color Shift, Glow, Bounce) y respuestas interactivas al hacer clic (Click Feedback) en botones y títulos.
 * Textos promocionales (sujetos a aprobación).
+* Texto del Botón de Acción (CTA) (susceptible a alteraciones semánticas como "Continuar", "Aceptar", etc.).
+* Textos con implicaciones operativas leves en portada: El texto legal inmediatamente inferior al CTA es 100% evitable, con controles de opacidad, tamaño, y color para poder "camuflarlo" con el diseño según las variables operativas; y los textos del pie de página (footer) y de banners de cookies, que pueden ser modificados para cumplir con directrices de cada Carrier directamente desde el panel sin necesidad de requerir un nuevo *Template Técnico*.
 
 #### B. Elementos Fijos (No Modificables por Marketing)
 
 Elementos estándar traídos directamente de la configuración del sistema (ej. desde Way) y exigidos por la operadora:
 
-* Textos legales y Términos & Condiciones.
+* Naturaleza de los vínculos a Textos legales y Términos & Condiciones (los links obligatorios apuntan permanentemente al gestor documental).
 * Datos del servicio: Nombre, Tarifa, Periodicidad del cobro.
 * Flujo técnico subyacente (3G, OTP, Enrichment, etc.).
 
