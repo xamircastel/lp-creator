@@ -274,16 +274,26 @@
                         
                         <div class="control-row">
                             <div class="form-group">
-                                <label>Color de Fondo</label>
-                                <div style="display: flex; gap: 5px;">
-                                    <select id="input-bg-type" class="form-control" onchange="toggleGradient('bg'); updatePreview()" style="font-size: 11px; padding: 4px; width: auto;">
-                                        <option value="solid">Sólido</option>
+                                <label>Fondo de Pantalla</label>
+                                <div style="display: flex; gap: 5px; margin-bottom: 5px;">
+                                    <select id="input-bg-type" class="form-control" onchange="toggleGradient('bg'); updatePreview()" style="font-size: 11px; padding: 4px; width: 33%;">
+                                        <option value="solid">Color Sólido</option>
                                         <option value="gradient">Degradado</option>
+                                        <option value="image">Imagen</option>
                                     </select>
-                                    <input type="color" id="input-bg-1" value="#1e293b" oninput="document.getElementById('input-bg-hex-1').value=this.value; updatePreview()" title="Color 1" style="width:30px; padding:0; height:30px;">
-                                    <input type="text" id="input-bg-hex-1" value="#1e293b" class="form-control" oninput="document.getElementById('input-bg-1').value=this.value; updatePreview()" style="width:70px; font-size:12px;">
-                                    <input type="color" id="input-bg-2" value="#0f172a" oninput="document.getElementById('input-bg-hex-2').value=this.value; updatePreview()" title="Color 2" style="width:30px; padding:0; height:30px; display:none;">
-                                    <input type="text" id="input-bg-hex-2" value="#0f172a" class="form-control" oninput="document.getElementById('input-bg-2').value=this.value; updatePreview()" style="width:70px; font-size:12px; display:none;">
+                                    <select id="input-bg-dir" class="form-control" onchange="updatePreview()" style="font-size: 11px; padding: 4px; width: 33%; display: none;">
+                                        <option value="to bottom">Hacia Abajo</option>
+                                        <option value="to right">Hacia Derecha</option>
+                                        <option value="to bottom right">Diagonal ↓→</option>
+                                        <option value="to top right">Diagonal ↑→</option>
+                                    </select>
+                                    <div id="bg-color-pickers" style="display: flex; gap: 5px;">
+                                        <input type="color" id="input-bg-1" value="#1e293b" oninput="document.getElementById('input-bg-hex-1').value=this.value; updatePreview()" title="Color 1" style="width:30px; padding:0; height:30px;">
+                                        <input type="text" id="input-bg-hex-1" value="#1e293b" class="form-control" oninput="document.getElementById('input-bg-1').value=this.value; updatePreview()" style="width:70px; font-size:12px;">
+                                        <input type="color" id="input-bg-2" value="#0f172a" oninput="document.getElementById('input-bg-hex-2').value=this.value; updatePreview()" title="Color 2" style="width:30px; padding:0; height:30px; display:none;">
+                                        <input type="text" id="input-bg-hex-2" value="#0f172a" class="form-control" oninput="document.getElementById('input-bg-2').value=this.value; updatePreview()" style="width:70px; font-size:12px; display:none;">
+                                    </div>
+                                    <input type="file" id="input-bg-file" accept="image/*" class="form-control" onchange="updatePreview()" style="font-size: 11px; padding: 4px; display:none; width:66%;">
                                 </div>
                             </div>
                         </div>
@@ -394,6 +404,46 @@
                             </div>
                         </div>
 
+                        <div class="form-group" style="margin-bottom: 15px;">
+                            <label>Texto Botón Principal (CTA)</label>
+                            <input type="text" value="Suscribirse a {{servicio}} por {{precio}}" id="input-btn-text" oninput="updatePreview()" style="width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 4px; box-sizing: border-box;">
+                            <div style="margin-top: 5px; display: flex; gap: 5px; flex-wrap: wrap;">
+                                <span style="font-size: 10px; color: #64748b; margin-top: 4px;">Variables:</span>
+                                <button class="btn btn-outline" style="padding: 2px 6px; font-size: 10px; border-radius: 10px;" onclick="insertPlaceholder('input-btn-text', '{{servicio}}')">+ {{servicio}}</button>
+                                <button class="btn btn-outline" style="padding: 2px 6px; font-size: 10px; border-radius: 10px;" onclick="insertPlaceholder('input-btn-text', '{{precio}}')">+ {{precio}}</button>
+                            </div>
+                        </div>
+
+                        <div class="form-group" style="margin-bottom: 15px; padding: 10px; border: 1px solid #e2e8f0; border-radius: 6px; background: #f8fafc;">
+                            <label>Legal Visible (Bajo Botón)</label>
+                            <textarea id="input-legal-text" oninput="updatePreview()" style="width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 4px; box-sizing: border-box; font-size: 11px; height: 60px; font-family: inherit;">Introduce tu número de teléfono para recibir un código de confirmación e iniciar la suscripción.</textarea>
+                            
+                            <div class="control-row" style="margin-top: 10px; align-items: end;">
+                                <div class="form-group" style="flex: 1;">
+                                    <label style="font-size: 10px;">Tamaño</label>
+                                    <select id="input-legal-size" onchange="updatePreview()" style="width: 100%; padding: 4px; font-size: 11px;">
+                                        <option value="11px">11px</option>
+                                        <option value="10px">10px</option>
+                                        <option value="9px">9px</option>
+                                        <option value="8px">8px (Muy pequeño)</option>
+                                    </select>
+                                </div>
+                                <div class="form-group" style="flex: 1;">
+                                    <label style="font-size: 10px;">Color de Texto</label>
+                                    <input type="color" id="input-legal-color" value="#334155" oninput="updatePreview()" style="width:100%; padding:0; height:24px;">
+                                </div>
+                                <div class="form-group" style="flex: 1;">
+                                    <label style="font-size: 10px;">Tonalidad / Opacidad</label>
+                                    <select id="input-legal-opacity" onchange="updatePreview()" style="width: 100%; padding: 4px; font-size: 11px;">
+                                        <option value="1">100% (Visible)</option>
+                                        <option value="0.7">70% (Tenue)</option>
+                                        <option value="0.4">40% (Oculto)</option>
+                                        <option value="0.2">20% (Casi invisible)</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- SECCIÓN 2: FIJOS (Operadora / Compliance) -->
                         <div class="section-title">🔒 Datos Operativa (Bloqueados por Template)</div>
                         
@@ -405,15 +455,6 @@
                             <div class="form-group">
                                 <label>Tarifa y Periodicidad</label>
                                 <input type="text" class="fixed-field" value="2,99€ / Semana (IVA Inc.)" readonly>
-                            </div>
-                        </div>
-                        <div class="form-group" style="margin-bottom: 15px;">
-                            <label>Texto Botón de Pago (Obligatorio)</label>
-                            <input type="text" value="Suscribirse a {{servicio}} por {{precio}}" id="input-btn-text" oninput="updatePreview()" style="width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 4px; box-sizing: border-box;">
-                            <div style="margin-top: 5px; display: flex; gap: 5px; flex-wrap: wrap;">
-                                <span style="font-size: 10px; color: #64748b; margin-top: 4px;">Variables:</span>
-                                <button class="btn btn-outline" style="padding: 2px 6px; font-size: 10px; border-radius: 10px;" onclick="insertPlaceholder('input-btn-text', '{{servicio}}')">+ {{servicio}}</button>
-                                <button class="btn btn-outline" style="padding: 2px 6px; font-size: 10px; border-radius: 10px;" onclick="insertPlaceholder('input-btn-text', '{{precio}}')">+ {{precio}}</button>
                             </div>
                         </div>
 
@@ -558,7 +599,8 @@
                                 <input type="tel" id="preview-msisdn" placeholder="Ej: 600 123 456" style="width: 80%; margin: 5px auto;">
                                 <input type="number" id="preview-otp" placeholder="PIN de 4 dígitos" style="width: 80%; margin: 5px auto;">
 
-                                <button id="preview-btn" style="width: 90%; margin: 15px auto;">Suscribirse con obligación de pago</button>
+                                <button id="preview-btn" style="width: 90%; margin: 15px auto 5px auto;">Suscribirse con obligación de pago</button>
+                                <div id="preview-legal-editable" style="width: 90%; margin: 0 auto 15px auto; font-size: 11px; text-align: center; transition: all 0.3s;">Introduce tu número de teléfono para recibir un código de confirmación e iniciar la suscripción.</div>
                                 </div>
                                 <div id="preview-success-content" style="display: none; align-items: center; justify-content: center; flex-direction: column; text-align: center; padding: 20px; margin-top: 40px;">
                                     <div style="width: 60px; height: 60px; background: #22c55e; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 30px; margin-bottom: 20px;">✓</div>
@@ -1002,17 +1044,30 @@
 
         // Lógica Preview en Tiempo Real
         function toggleGradient(target) {
-            const isGradient = document.getElementById(`input-${target}-type`).value === 'gradient';
+            const valType = document.getElementById(`input-${target}-type`).value;
+            const isGradient = valType === 'gradient';
             document.getElementById(`input-${target}-2`).style.display = isGradient ? 'block' : 'none';
             document.getElementById(`input-${target}-hex-2`).style.display = isGradient ? 'block' : 'none';
+            
+            if (target === 'bg') {
+                document.getElementById('input-bg-dir').style.display = isGradient ? 'block' : 'none';
+                const isImage = valType === 'image';
+                document.getElementById('bg-color-pickers').style.display = isImage ? 'none' : 'flex';
+                document.getElementById('input-bg-file').style.display = isImage ? 'block' : 'none';
+            }
         }
 
         function updatePreview() {
-            // Manejo de Color de Fondo (Sólido o Degradado)
+            // Manejo de Color de Fondo (Sólido o Degradado o Imagen)
             const bgType = document.getElementById('input-bg-type').value;
             const bgHex1 = document.getElementById('input-bg-hex-1').value;
             const bgHex2 = document.getElementById('input-bg-hex-2').value;
-            let bgColorStyle = bgType === 'gradient' ? `linear-gradient(135deg, ${bgHex1}, ${bgHex2})` : bgHex1;
+            const bgDir = document.getElementById('input-bg-dir').value;
+            let bgColorStyle = bgHex1;
+            
+            if (bgType === 'gradient') {
+                bgColorStyle = `linear-gradient(${bgDir}, ${bgHex1}, ${bgHex2})`;
+            }
 
             // Manejo de Color de Botón (Sólido o Degradado)
             const btnType = document.getElementById('input-btn-type').value;
@@ -1032,11 +1087,29 @@
             const previewBg = document.getElementById('preview-bg');
             if (bgType === 'gradient') {
                 previewBg.style.background = bgColorStyle; // Usa background para degradado
+                previewBg.style.backgroundSize = 'cover';
+            } else if (bgType === 'image') {
+                const fileInput = document.getElementById('input-bg-file');
+                if (fileInput.files && fileInput.files[0]) {
+                    const imgUrl = URL.createObjectURL(fileInput.files[0]);
+                    previewBg.style.background = `url(${imgUrl}) center center / cover no-repeat`;
+                } else {
+                    previewBg.style.background = bgColorStyle; // Fallback
+                }
             } else {
                 previewBg.style.background = '';
                 previewBg.style.backgroundColor = bgColorStyle;
             }
             previewBg.style.color = textColor;
+            
+            // Textos legales expuestos y editables
+            const legalEditable = document.getElementById('preview-legal-editable');
+            if(legalEditable) {
+                legalEditable.innerText = document.getElementById('input-legal-text').value;
+                legalEditable.style.fontSize = document.getElementById('input-legal-size').value;
+                legalEditable.style.color = document.getElementById('input-legal-color').value;
+                legalEditable.style.opacity = document.getElementById('input-legal-opacity').value;
+            }
             
             const previewBtn = document.getElementById('preview-btn');
             if (btnType === 'gradient') {
