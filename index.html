@@ -444,6 +444,16 @@
                             </div>
                         </div>
 
+                        <div class="form-group" style="margin-bottom: 15px;">
+                            <label>Texto Legal del Footer (Pie de página)</label>
+                            <textarea id="input-footer-text" oninput="updatePreview()" style="width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 4px; box-sizing: border-box; font-size: 11px; height: 60px; font-family: inherit;">Legal: Al pulsar enviar aceptas las condiciones generales de {{operadora}} y Newry. El servicio se renovará automáticamente.</textarea>
+                            <div style="margin-top: 5px; display: flex; gap: 5px; flex-wrap: wrap;">
+                                <span style="font-size: 10px; color: #64748b; margin-top: 4px;">Variables:</span>
+                                <button class="btn btn-outline" style="padding: 2px 6px; font-size: 10px; border-radius: 10px;" onclick="insertPlaceholder('input-footer-text', '{{operadora}}')">+ {{operadora}}</button>
+                                <button class="btn btn-outline" style="padding: 2px 6px; font-size: 10px; border-radius: 10px;" onclick="insertPlaceholder('input-footer-text', '{{servicio}}')">+ {{servicio}}</button>
+                            </div>
+                        </div>
+
                         <!-- SECCIÓN 2: FIJOS (Operadora / Compliance) -->
                         <div class="section-title">🔒 Datos Operativa (Bloqueados por Template)</div>
                         
@@ -461,9 +471,12 @@
                         <!-- SECCIÓN 3: COMPLIANCE Y SCRIPTS -->
                         <div class="section-title">⚙️ Configuraciones Técnicas y Compliance</div>
                         
-                        <div class="form-group" style="margin-bottom: 15px; flex-direction: row; align-items: center; gap: 10px;">
-                            <input type="checkbox" id="input-cookies" checked onchange="updatePreview()">
-                            <label for="input-cookies" style="margin: 0;">Activar Banner de Consentimiento de Cookies (GDPR)</label>
+                        <div class="form-group" style="margin-bottom: 15px;">
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                                <input type="checkbox" id="input-cookies" checked onchange="updatePreview()">
+                                <label for="input-cookies" style="margin: 0;">Activar y Editar Banner de Cookies</label>
+                            </div>
+                            <textarea id="input-cookie-text" oninput="updatePreview()" style="width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 4px; box-sizing: border-box; font-size: 11px; height: 50px; font-family: inherit;">Aviso de Cookies: Utilizamos cookies para mejorar tu experiencia. Al continuar aceptas las políticas de la UE.</textarea>
                         </div>
 
                         <div class="form-group" style="margin-bottom: 5px;">
@@ -1080,9 +1093,13 @@
             const titletext = document.getElementById('input-title').value;
             let btnText = document.getElementById('input-btn-text').value; 
             const showCookies = document.getElementById('input-cookies').checked;
+            const cookieText = document.getElementById('input-cookie-text').value;
+            const footerText = document.getElementById('input-footer-text').value;
 
             const parsedTitle = processPlaceholders(titletext);
             const parsedBtnText = processPlaceholders(btnText);
+            const parsedCookieText = processPlaceholders(cookieText);
+            const parsedFooterText = processPlaceholders(footerText);
 
             const previewBg = document.getElementById('preview-bg');
             if (bgType === 'gradient') {
@@ -1132,7 +1149,16 @@
             previewTitle.className = '';
             if (titleAnim) previewTitle.classList.add(titleAnim);
 
-            document.getElementById('preview-cookie').style.display = showCookies ? 'block' : 'none';
+            const previewFooter = document.querySelector('.preview-footer');
+            if (previewFooter) {
+                previewFooter.innerText = parsedFooterText;
+            }
+
+            const previewCookie = document.getElementById('preview-cookie');
+            if (previewCookie) {
+                previewCookie.style.display = showCookies ? 'block' : 'none';
+                previewCookie.innerHTML = `<strong>Aviso de Cookies:</strong> ${parsedCookieText} <div style="margin-top: 5px; text-decoration: underline;">Aceptar Todas</div>`;
+            }
 
             const logoUrl = document.getElementById('input-logo-url')?.value;
             if (logoUrl) {
